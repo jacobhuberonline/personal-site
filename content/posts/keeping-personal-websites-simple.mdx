@@ -1,0 +1,122 @@
+---
+title: "Keeping Personal Websites Simple"
+slug: "keeping-personal-websites-simple"
+date: "2025-11-29"
+summary: "Why a simple personal website built with Next.js, Vercel, shadcn/ui, and AI-assisted 'vibe coding' is easier to ship, maintain, and refine over time."
+tags: ["personal", "design", "workflow"]
+published: true
+image: "/images/blog/keeping-personal-websites-simple/header.png"
+---
+
+## Introduction
+
+This post explains why a simple approach to **personal websites** works best, and how a modern stack—[Next.js](https://nextjs.org), [Vercel](https://vercel.com), and [shadcn/ui](https://ui.shadcn.com)—combined with AI-assisted “vibe coding” in ChatGPT makes it easier to build and maintain. It is based on repeated experience overcomplicating personal sites and finding that minimal, clean versions are the only ones that stay alive.
+
+Avoiding commercial website builders such as Squarespace, Wix, and Webflow also keeps the workflow simpler and more cost‑effective. These platforms add subscription overhead and restrict deeper customization. Building the site directly with Next.js, Vercel, and shadcn/ui allows full control of layout, behavior, and performance without recurring fees.
+
+## Why Simple Still Wins
+
+Over years of building personal sites, a consistent pattern emerges:
+
+- Complex layouts and features feel interesting at first but are hard to maintain.
+- Simple, focused pages get updated more often and break less.
+- The sites that actually last are the ones that are easy to change in small increments.
+
+Keeping the structure simple also shifts attention to what matters most: the content. A minimal layout removes distractions and reduces the time spent adjusting design details, making it easier to write, update, and maintain the information that the site exists to present.
+
+Minimal personal websites reduce decisions: fewer pages, fewer layouts, and fewer moving parts. That directly lowers the friction of opening the project, making a small change, and redeploying.
+
+## The Core Stack: Next.js, Vercel, and shadcn/ui
+
+The current setup is straightforward:
+
+- **[Next.js](https://nextjs.org)** as the application framework
+- **[Vercel](https://vercel.com)** for hosting and deployment
+- **[shadcn/ui](https://ui.shadcn.com)** as a component library on top of Tailwind CSS
+
+Each part removes a category of complexity.
+
+### Next.js: sensible defaults for personal websites
+
+Next.js simplifies the basics that personal websites need:
+
+- File-based routing keeps pages simple (e.g., `app/page.tsx`, `app/blog/page.tsx`).
+- Built-in support for metadata and SEO makes it easy to define titles, descriptions, and Open Graph data close to the page code.
+- Server-side rendering and static generation are handled by the framework, without custom wiring.
+
+For a personal site, this means you can focus on content and structure instead of reinventing routing, data fetching, or build configuration. The framework gives enough structure to avoid chaos, but not so much that a small site feels heavy.
+
+### Vercel: deployment as a non-event
+
+With Vercel:
+
+- Connecting a Git repository and deploying is a one-time setup.
+- Each push creates a new build automatically.
+- Preview deployments let you see changes before merging, even for small tweaks.
+
+For a personal website, this removes the usual friction around deployment scripts, hosting configuration, and manual uploads. The deployment pipeline becomes something you don’t have to think about, which supports the goal of keeping the site simple and maintainable.
+
+Vercel is also cost‑effective for personal websites. Its free tier covers the needs of most small projects, and upgrades are straightforward if traffic grows. Pricing details are available [here](https://vercel.com/pricing).
+
+### shadcn/ui: consistent UI without design overhead
+
+shadcn/ui provides:
+
+- Pre-built, accessible React components.
+- A consistent design system that sits naturally on top of Tailwind.
+- Components that can be copied and adapted instead of built from scratch.
+
+For a personal site, this means the UI can look clean and consistent without designing every component manually. You can assemble pages from known pieces (buttons, cards, sections) while still keeping the layout minimal.
+
+## How “Vibe Coding” With ChatGPT Fits In
+
+A key part of the workflow is using ChatGPT (via its coding capabilities, sometimes referred to as Codex-style assistance) to “vibe code” the site. Practically, this looks like:
+
+- Describing the layout or section in plain language.
+- Letting the model generate a first-draft implementation in Next.js + shadcn/ui.
+- Iterating with small adjustments (“make the hero more compact,” “simplify this section,” “align this with the rest of the layout”).
+
+This reduces the time spent on boilerplate and translation from idea to code. Instead of:
+
+1. Designing something on paper or in a separate tool,
+2. Recreating it by hand in JSX and CSS, and
+3. Tweaking until it matches the mental picture,
+
+you move directly from description to code, then refine. The AI assistant handles a large portion of the initial typing and structure.
+
+## How This Workflow Reduces Time and Complexity
+
+Putting it together:
+
+- **Idea to layout**: Describe the section (e.g., “a centered hero with a short tagline and a simple call-to-action”) and get a code snippet that matches the intent.
+- **UI consistency**: Use shadcn/ui components in the generated code so everything stays aligned visually and structurally.
+- **Fast iteration**: Ask for adjustments (“use a two-column layout,” “reduce padding on mobile,” “convert this to a reusable component”) instead of manually rewriting everything.
+- **Deployment**: Commit, push, and let Vercel handle build and deploy.
+
+This reduces:
+
+- Context switching between design, layout, and implementation.
+- Manual boilerplate coding for common patterns.
+- The temptation to overbuild, because it is easy to keep the scope small and focused.
+
+The result is a personal website that is simple by design and also simple to change. The stack and the AI-assisted workflow align with the goal of staying minimal: they remove friction from small updates rather than inviting large, complex rewrites.
+
+## Keeping Personal Websites Sustainable
+
+The combination of:
+
+- A simple structure (few pages, clear navigation),
+- A stable, well-known stack (Next.js, Vercel, shadcn/ui),
+- And AI-assisted “vibe coding” in ChatGPT
+
+creates a sustainable setup. It becomes realistic to keep the site updated because:
+
+- The codebase is not overloaded with experiments.
+- The deployment process is automated.
+- The time from “I should fix this” to “it’s live” is short.
+
+For personal websites, this is the main advantage: not that they are impressive, but that they keep working and keep reflecting what you are actually doing.
+
+## Conclusion
+
+Keeping **personal websites** simple is easier when the tooling and workflow support that simplicity. Next.js, Vercel, and shadcn/ui provide a stable foundation, and AI-assisted vibe coding with ChatGPT reduces the effort of turning ideas into code. The result is a minimal, clean site that is practical to maintain over the long term, instead of another overcomplicated project that gets abandoned.
