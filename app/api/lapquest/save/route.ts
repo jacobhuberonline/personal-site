@@ -34,8 +34,9 @@ export async function POST(req: Request) {
 
   // Expected body:
   // {
-  //   mode: 'free' | 'first_to_n' | 'time_trial',
-  //   target: number | null,
+  //   mode: 'free' | 'first_to_n' | 'time_trial' | 'distance',
+  //   target: number | null, // laps for first_to_n, seconds for time_trial, meters for distance
+  //   targetUnit: 'm' | 'mi' | null, // for distance mode only
   //   courseId: string | null,
   //   startedAtIso: string,
   //   endedAtIso: string,
@@ -53,6 +54,7 @@ export async function POST(req: Request) {
     totalLaps,
     laps,
   } = body ?? {};
+  const targetUnit = body?.targetUnit ?? null;
 
   if (!mode || !startedAtIso || !endedAtIso || typeof durationMs !== "number" || typeof totalLaps !== "number") {
     return NextResponse.json(
@@ -70,6 +72,7 @@ export async function POST(req: Request) {
       course_id: courseId,
       mode,
       target,
+      target_unit: targetUnit,
       started_at: startedAtIso,
       ended_at: endedAtIso,
       total_laps: totalLaps,

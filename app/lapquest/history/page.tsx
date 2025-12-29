@@ -24,7 +24,20 @@ type RunRow = {
   duration_ms: number;
   mode: string;
   target: number | null;
+  target_unit: "m" | "mi" | null;
 };
+
+function formatDistanceTarget(targetMeters: number, unit: "m" | "mi" | null) {
+  if (!Number.isFinite(targetMeters)) return "—";
+  if (unit === "mi") {
+    const miles = targetMeters / 1609.344;
+    const digits = miles >= 10 ? 1 : miles >= 1 ? 2 : 3;
+    return `${miles.toFixed(digits)} mi`;
+  }
+  const metersText =
+    targetMeters >= 100 ? targetMeters.toFixed(0) : targetMeters >= 10 ? targetMeters.toFixed(1) : targetMeters.toFixed(2);
+  return `${metersText} m`;
+}
 
 export default function HistoryPage() {
   const [runs, setRuns] = useState<RunRow[]>([]);
@@ -71,7 +84,7 @@ export default function HistoryPage() {
         }
         return client
           .from("runs")
-          .select("id, started_at, total_laps, duration_ms, mode, target")
+          .select("id, started_at, total_laps, duration_ms, mode, target, target_unit")
           .order("started_at", { ascending: false })
           .limit(100);
       })
@@ -219,7 +232,11 @@ export default function HistoryPage() {
                 </button>
               </div>
               <div className="mt-1 text-sm text-zinc-400">
-                Mode: {r.mode} {r.target != null ? `(target ${r.target})` : ""} · Duration:{" "}
+                Mode:{" "}
+                {r.mode === "distance"
+                  ? `distance (target ${r.target != null ? formatDistanceTarget(r.target, r.target_unit) : "—"})`
+                  : r.mode}{" "}
+                {r.mode !== "distance" && r.target != null ? `(target ${r.target})` : ""} · Duration:{" "}
                 {(r.duration_ms / 1000).toFixed(1)}s
               </div>
             </div>

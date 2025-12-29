@@ -1,8 +1,8 @@
-export type Mode = "free" | "first_to_n" | "time_trial";
+export type Mode = "free" | "first_to_n" | "time_trial" | "distance";
 
 export type RaceConfig = {
   mode: Mode;
-  target?: number;          // laps for first_to_n, seconds for time_trial
+  target?: number;          // laps for first_to_n/distance, seconds for time_trial
   countdownSec: number;     // e.g. 3
   lapLockoutMs: number;     // e.g. 2000
 };
@@ -67,7 +67,7 @@ export function reduceRace(cfg: RaceConfig, state: RaceState, ev: RaceEvent): Ra
 
     case "running": {
       if (
-        cfg.mode === "first_to_n" &&
+        (cfg.mode === "first_to_n" || cfg.mode === "distance") &&
         typeof cfg.target === "number" &&
         Number.isFinite(cfg.target) &&
         cfg.target > 0 &&
@@ -97,7 +97,9 @@ export function reduceRace(cfg: RaceConfig, state: RaceState, ev: RaceEvent): Ra
         };
 
         // finish conditions
-        if (cfg.mode === "first_to_n" && cfg.target && laps >= cfg.target) return finish(next);
+        if ((cfg.mode === "first_to_n" || cfg.mode === "distance") && cfg.target && laps >= cfg.target) {
+          return finish(next);
+        }
         if (cfg.mode === "time_trial" && cfg.target) {
           const maxMs = cfg.target * 1000;
           if (elapsedMs >= maxMs) return finish(next);

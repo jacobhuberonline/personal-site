@@ -50,6 +50,12 @@ function formatImperialTooltip(inches: number | null | undefined) {
   return `${milesText} mi · ${feetText}`;
 }
 
+function formatDistanceForDisplay(meters: number, unit: "m" | "mi") {
+  const value = unit === "mi" ? meters / 1609.344 : meters;
+  const rounded = value >= 100 ? value.toFixed(0) : value >= 10 ? value.toFixed(1) : value.toFixed(2);
+  return { value: rounded, unit };
+}
+
 function msToSec(ms: number) {
   return (ms / 1000).toFixed(2);
 }
@@ -74,21 +80,23 @@ function RacePageContent() {
   const modeParam = searchParams.get("mode");
   const targetParam = searchParams.get("target");
   const courseParam = searchParams.get("course");
+  const distanceParam = searchParams.get("distance");
+  const distanceUnitParam = searchParams.get("distanceUnit");
   const selectedCourseId = courseParam ?? null;
   const mode: Mode =
-    modeParam === "free" || modeParam === "first_to_n" || modeParam === "time_trial" ? modeParam : "first_to_n";
+    modeParam === "free" || modeParam === "first_to_n" || modeParam === "time_trial" || modeParam === "distance"
+      ? modeParam
+      : "first_to_n";
   const parsedTarget = targetParam ? Number(targetParam) : undefined;
   const target = Number.isFinite(parsedTarget) ? parsedTarget : undefined;
-
-  const cfg: RaceConfig = useMemo(
-    () => ({
-      mode,
-      target: mode === "free" ? undefined : target,
-      countdownSec: 3,
-      lapLockoutMs: 2000,
-    }),
-    [mode, target]
-  );
+  const distanceUnit = distanceUnitParam === "mi" ? "mi" : "m";
+  const parsedDistance = distanceParam ? Number(distanceParam) : undefined;
+  const distanceMeters =
+    Number.isFinite(parsedDistance) && parsedDistance != null
+      ? distanceUnit === "mi"
+        ? parsedDistance * 1609.344
+        : parsedDistance
+      : null;
 
   const serial = useLapquestSerial();
   const [state, setState] = useState<RaceState>(initialRaceState());
@@ -98,6 +106,23 @@ function RacePageContent() {
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
   const [bestLapDbMs, setBestLapDbMs] = useState<number | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const lapDistanceMeters = selectedCourse?.lap_distance_in
+    ? selectedCourse.lap_distance_in * 0.0254
+    : null;
+  const distanceTargetLaps =
+    mode === "distance" && lapDistanceMeters != null && distanceMeters != null && distanceMeters > 0
+      ? Math.ceil(distanceMeters / lapDistanceMeters)
+      : null;
+
+  const cfg: RaceConfig = useMemo(
+    () => ({
+      mode,
+      target: mode === "free" ? undefined : mode === "distance" ? distanceTargetLaps ?? undefined : target,
+      countdownSec: 3,
+      lapLockoutMs: 2000,
+    }),
+    [distanceTargetLaps, mode, target]
+  );
   const { toast } = useToast();
   const statusWindowMs = 1500;
   const beamMisalignBufferMs = 600;
@@ -317,6 +342,14 @@ function RacePageContent() {
   const avgLapMs =
     state.phase === "finished" && state.laps > 0 && raceDurationMs != null ? raceDurationMs / state.laps : null;
   const runningElapsedMs = state.phase === "running" ? Math.max(0, nowPerf - state.startedAtPerf) : null;
+  const distanceRemainingMeters =
+    mode === "distance" && lapDistanceMeters != null && distanceMeters != null
+      ? Math.max(0, distanceMeters - laps * lapDistanceMeters)
+      : null;
+  const distanceRemainingDisplay =
+    distanceRemainingMeters != null ? formatDistanceForDisplay(distanceRemainingMeters, distanceUnit) : null;
+  const distanceTargetDisplay =
+    distanceMeters != null ? formatDistanceForDisplay(distanceMeters, distanceUnit) : null;
   const totalDistanceLabel =
     selectedCourse?.lap_distance_in && laps > 0
       ? formatTotalDistance(selectedCourse.lap_distance_in * laps)
@@ -370,7 +403,11 @@ function RacePageContent() {
       ? "Run through the beam to count laps."
       : cfg.mode === "first_to_n"
         ? `Target: ${cfg.target} laps`
-        : `Target: ${cfg.target} seconds`;
+        : cfg.mode === "time_trial"
+          ? `Target: ${cfg.target} seconds`
+          : distanceTargetDisplay
+            ? `Target: ${distanceTargetDisplay.value} ${distanceTargetDisplay.unit} (${distanceTargetLaps ?? "—"} laps)`
+            : "Target: distance";
 
   const gateLabel = !serial.connected
     ? "Waiting…"
@@ -430,7 +467,7 @@ function RacePageContent() {
     }
     if (lastLapCueRef.current) return;
 
-    if (cfg.mode === "first_to_n" && cfg.target != null) {
+    if ((cfg.mode === "first_to_n" || cfg.mode === "distance") && cfg.target != null) {
       if (laps === Math.max(0, cfg.target - 1)) {
         triggerLastLapCue();
       }
@@ -493,7 +530,9 @@ function RacePageContent() {
   };
 
   const goalPct =
-    cfg.mode === "first_to_n" && cfg.target ? Math.max(0, Math.min(100, (laps / cfg.target) * 100)) : null;
+    (cfg.mode === "first_to_n" || cfg.mode === "distance") && cfg.target
+      ? Math.max(0, Math.min(100, (laps / cfg.target) * 100))
+      : null;
 
   const saveRun = useCallback(async (snapshot: Extract<RaceState, { phase: "finished" }>) => {
     if (saveStatus === "saving") return;
@@ -540,6 +579,9 @@ function RacePageContent() {
     });
 
     const durationMs = Math.round(snapshot.endedAtPerf - snapshot.startedAtPerf);
+    const saveTarget =
+      cfg.mode === "distance" ? (distanceMeters != null ? Math.round(distanceMeters) : null) : cfg.target ?? null;
+    const saveTargetUnit = cfg.mode === "distance" ? distanceUnit : null;
 
     // Convert perf timestamps to ISO approximations (good enough for your use)
     const nowEpoch = Date.now();
@@ -552,7 +594,8 @@ function RacePageContent() {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({
           mode: cfg.mode,
-          target: cfg.target ?? null,
+          target: saveTarget,
+          targetUnit: saveTargetUnit,
           courseId: selectedCourseId,
           startedAtIso,
           endedAtIso,
@@ -592,7 +635,7 @@ function RacePageContent() {
         description: message,
       });
     }
-  }, [cfg.mode, cfg.target, saveStatus, selectedCourseId, toast]);
+  }, [cfg.mode, cfg.target, distanceMeters, distanceUnit, saveStatus, selectedCourseId, toast]);
 
   useEffect(() => {
     if (state.phase !== "finished") {
@@ -672,6 +715,20 @@ function RacePageContent() {
           </div>
         </header>
 
+        {state.phase === "running" && goalPct != null && cfg.target != null && (
+          <div className="mt-6 w-full">
+            <div className="mb-2 flex items-center justify-between text-sm text-zinc-400">
+              <span>Goal</span>
+              <span>
+                {laps} / {cfg.target}
+              </span>
+            </div>
+            <div className="h-5 w-full rounded-full bg-zinc-800">
+              <div className="h-5 rounded-full bg-white/80" style={{ width: `${goalPct}%` }} />
+            </div>
+          </div>
+        )}
+
         {state.phase === "idle" && (
           <div className="mt-4 text-center text-zinc-300">
             <div className="text-sm font-medium uppercase tracking-[0.2em] text-zinc-500">
@@ -683,20 +740,33 @@ function RacePageContent() {
         <div className="mt-10 flex flex-1 flex-col items-center justify-center gap-6 text-center">
           {state.phase === "running" ? (
             <div className="flex w-full flex-col items-center gap-8">
-              {cfg.mode === "time_trial" || cfg.mode === "free" ? (
+              {cfg.mode === "time_trial" || cfg.mode === "free" || cfg.mode === "distance" ? (
                 <div className="grid w-full max-w-5xl items-center gap-8 text-center md:grid-cols-2">
                   <div className="flex flex-col items-center gap-2">
                     <div className="text-xs uppercase tracking-[0.4em] text-zinc-500">
-                      {cfg.mode === "time_trial" ? "Time left" : "Elapsed"}
+                      {cfg.mode === "time_trial"
+                        ? "Time left"
+                        : cfg.mode === "distance"
+                          ? "Distance left"
+                          : "Elapsed"}
                     </div>
                     <div className="text-[clamp(200px,20vw,360px)] font-black leading-none text-white">
-                      {cfg.mode === "time_trial"
-                        ? timeTrialLeftSec ?? 0
-                        : runningElapsedMs != null
-                          ? formatElapsed(runningElapsedMs)
-                          : "0:00"}
-                      {cfg.mode === "time_trial" && (
-                        <span className="ml-2 text-[0.35em] font-semibold text-zinc-400">s</span>
+                      {cfg.mode === "time_trial" ? (
+                        <>
+                          {timeTrialLeftSec ?? 0}
+                          <span className="ml-2 text-[0.35em] font-semibold text-zinc-400">s</span>
+                        </>
+                      ) : cfg.mode === "distance" ? (
+                        <>
+                          {distanceRemainingDisplay?.value ?? "—"}
+                          <span className="ml-2 text-[0.35em] font-semibold text-zinc-400">
+                            {distanceRemainingDisplay?.unit ?? ""}
+                          </span>
+                        </>
+                      ) : runningElapsedMs != null ? (
+                        formatElapsed(runningElapsedMs)
+                      ) : (
+                        "0:00"
                       )}
                     </div>
                   </div>
@@ -716,25 +786,14 @@ function RacePageContent() {
                 </div>
               )}
 
-              {goalPct != null && cfg.target != null && (
-                <div className="w-full max-w-3xl">
-                  <div className="mb-2 flex items-center justify-between text-sm text-zinc-400">
-                    <span>Goal</span>
-                    <span>
-                      {laps} / {cfg.target}
-                    </span>
-                  </div>
-                  <div className="h-4 w-full rounded-full bg-zinc-800">
-                    <div className="h-4 rounded-full bg-white/80" style={{ width: `${goalPct}%` }} />
-                  </div>
-                </div>
-              )}
-
               <div className="flex flex-wrap justify-center gap-8 text-2xl text-zinc-300">
                 <div>Last lap: {lastLapMs != null ? `${msToSec(lastLapMs)}s` : "—"}</div>
                 <div>
-                  Best lap:{" "}
-                  {bestLapDisplayMs != null && bestLapDisplayMs !== Infinity ? `${msToSec(bestLapDisplayMs)}s` : "—"}
+                  Best this run: {bestLapMs != null && bestLapMs !== Infinity ? `${msToSec(bestLapMs)}s` : "—"}
+                </div>
+                <div>
+                  Best overall:{" "}
+                  {bestLapDbMs != null && bestLapDbMs !== Infinity ? `${msToSec(bestLapDbMs)}s` : "—"}
                 </div>
               </div>
             </div>
@@ -753,11 +812,11 @@ function RacePageContent() {
             <TooltipProvider delayDuration={200}>
               <div className="w-full max-w-3xl rounded-3xl border border-zinc-800 bg-zinc-950/60 p-6 text-left">
                 <div className="text-xs font-semibold uppercase tracking-[0.3em] text-zinc-500">Race summary</div>
-                {selectedCourse && (
-                  <div className="mt-2 text-sm font-semibold text-zinc-400">
-                    {selectedCourse.name}
-                    {selectedCourse.lap_distance_in && lapDistanceTooltip ? (
-                      <Tooltip>
+              {selectedCourse && (
+                <div className="mt-2 text-sm font-semibold text-zinc-400">
+                  {selectedCourse.name}
+                  {selectedCourse.lap_distance_in && lapDistanceTooltip ? (
+                    <Tooltip>
                         <TooltipTrigger asChild>
                           <span className="cursor-help">
                             {" "}
@@ -769,8 +828,14 @@ function RacePageContent() {
                     ) : (
                       ""
                     )}
-                  </div>
-                )}
+                </div>
+              )}
+              {cfg.mode === "distance" && distanceTargetDisplay && (
+                <div className="mt-2 text-sm font-semibold text-zinc-400">
+                  Target distance: {distanceTargetDisplay.value} {distanceTargetDisplay.unit}
+                  {distanceTargetLaps != null ? ` · ${distanceTargetLaps} laps` : ""}
+                </div>
+              )}
                 <div className="mt-5 grid gap-4 text-zinc-200 sm:grid-cols-2 lg:grid-cols-3">
                   <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-4">
                     <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">Total time</div>
@@ -804,11 +869,11 @@ function RacePageContent() {
                     </div>
                   </div>
                   <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-4">
-                    <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">Best lap</div>
-                    <div className="mt-2 text-3xl font-bold">
-                      {bestLapMs != null && bestLapMs !== Infinity ? `${msToSec(bestLapMs)}s` : "—"}
-                    </div>
+                  <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">Best lap</div>
+                  <div className="mt-2 text-3xl font-bold">
+                    {bestLapMs != null && bestLapMs !== Infinity ? `${msToSec(bestLapMs)}s` : "—"}
                   </div>
+                </div>
                   <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-4">
                     <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">Last lap</div>
                     <div className="mt-2 text-3xl font-bold">

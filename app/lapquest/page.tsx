@@ -109,18 +109,45 @@ export default function LapQuestHome() {
     }
   };
 
-  const [mode, setMode] = useState<"free" | "first_to_n" | "time_trial">("first_to_n");
+  const [mode, setMode] = useState<"free" | "first_to_n" | "time_trial" | "distance">("first_to_n");
   const [target, setTarget] = useState<number>(20);
   const [courses, setCourses] = useState<Course[]>([]);
   const [coursesStatus, setCoursesStatus] = useState("");
   const [coursesLoading, setCoursesLoading] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
+  const [distanceValue, setDistanceValue] = useState("");
+  const [distanceUnit, setDistanceUnit] = useState<"m" | "mi">("m");
   const [courseDialogOpen, setCourseDialogOpen] = useState(false);
   const [newCourseName, setNewCourseName] = useState("");
   const [newCourseFeet, setNewCourseFeet] = useState("");
   const [newCourseInches, setNewCourseInches] = useState("");
   const [createCourseStatus, setCreateCourseStatus] = useState("");
   const [createCourseLoading, setCreateCourseLoading] = useState(false);
+
+  const selectedCourse = useMemo(
+    () => courses.find((course) => course.id === selectedCourseId) ?? null,
+    [courses, selectedCourseId]
+  );
+  const lapDistanceMeters = selectedCourse?.lap_distance_in
+    ? selectedCourse.lap_distance_in * 0.0254
+    : null;
+  const parsedDistance = distanceValue.trim() === "" ? null : Number(distanceValue);
+  const distanceMeters =
+    parsedDistance != null && Number.isFinite(parsedDistance)
+      ? distanceUnit === "mi"
+        ? parsedDistance * 1609.344
+        : parsedDistance
+      : null;
+  const distanceTargetLaps =
+    lapDistanceMeters != null && distanceMeters != null && distanceMeters > 0
+      ? Math.ceil(distanceMeters / lapDistanceMeters)
+      : null;
+  const startDisabled =
+    mode === "distance"
+      ? !distanceTargetLaps
+      : mode === "free"
+        ? false
+        : !Number.isFinite(target) || target <= 0;
 
   useEffect(() => {
     const client = supabase;
@@ -184,10 +211,14 @@ export default function LapQuestHome() {
   const query = useMemo(() => {
     const p = new URLSearchParams();
     p.set("mode", mode);
-    if (mode !== "free") p.set("target", String(target));
+    if (mode === "first_to_n" || mode === "time_trial") p.set("target", String(target));
+    if (mode === "distance" && distanceValue.trim()) {
+      p.set("distance", distanceValue.trim());
+      p.set("distanceUnit", distanceUnit);
+    }
     if (selectedCourseId) p.set("course", selectedCourseId);
     return p.toString();
-  }, [mode, selectedCourseId, target]);
+  }, [distanceUnit, distanceValue, mode, selectedCourseId, target]);
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -334,6 +365,7 @@ export default function LapQuestHome() {
                   <SelectContent>
                     <SelectItem value="first_to_n">Target laps</SelectItem>
                     <SelectItem value="time_trial">Time trial (seconds)</SelectItem>
+                    <SelectItem value="distance">Distance</SelectItem>
                     <SelectItem value="free">Free run</SelectItem>
                   </SelectContent>
                 </Select>
@@ -342,11 +374,47 @@ export default function LapQuestHome() {
                     ? "Finish automatically when you reach the target lap count."
                     : mode === "time_trial"
                       ? "Run laps until the timer hits your target."
+                      : mode === "distance"
+                        ? "Run until you cover the target distance."
                       : "Start and stop whenever you want."}
                 </p>
               </div>
 
-              {mode !== "free" && (
+              {mode === "distance" && (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-zinc-200">Target distance</label>
+                  <div className="grid gap-3 sm:grid-cols-[1fr_140px]">
+                    <Input
+                      type="number"
+                      min={0}
+                      step="0.1"
+                      value={distanceValue}
+                      onChange={(e) => setDistanceValue(e.target.value)}
+                      placeholder="1000"
+                    />
+                    <Select value={distanceUnit} onValueChange={(value) => setDistanceUnit(value as "m" | "mi")}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="m">Meters</SelectItem>
+                        <SelectItem value="mi">Miles</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {selectedCourse?.lap_distance_in ? (
+                    <p className="text-xs text-zinc-500">
+                      {distanceTargetLaps != null
+                        ? `Estimated laps: ${distanceTargetLaps} (rounded up).`
+                        : "Enter a distance to calculate laps."}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-amber-200">Add a lap distance to the course to use distance mode.</p>
+                  )}
+                </div>
+              )}
+
+              {(mode === "first_to_n" || mode === "time_trial") && (
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-zinc-200">
                     {mode === "first_to_n" ? "Target laps" : "Time limit (seconds)"}
@@ -368,12 +436,15 @@ export default function LapQuestHome() {
               )}
 
               <div className="flex flex-wrap gap-3">
-                <Button
-                  asChild
-                  className="bg-white text-black hover:bg-zinc-200"
-                >
-                  <Link href={`/lapquest/race?${query}`}>Select</Link>
-                </Button>
+                {startDisabled ? (
+                  <Button disabled className="bg-white text-black hover:bg-zinc-200">
+                    Select
+                  </Button>
+                ) : (
+                  <Button asChild className="bg-white text-black hover:bg-zinc-200">
+                    <Link href={`/lapquest/race?${query}`}>Select</Link>
+                  </Button>
+                )}
                 <Button
                   asChild
                   variant="outline"
