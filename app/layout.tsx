@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import type { ReactNode } from "react";
+import Link from "next/link";
 import { ThemeProvider } from "../components/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -57,10 +58,10 @@ const navItems = [
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-neutral-50 text-neutral-900 transition-colors duration-200 dark:bg-neutral-950 dark:text-neutral-50">
+      <body className="min-h-screen overflow-x-hidden bg-neutral-50 text-neutral-900 transition-colors duration-200 dark:bg-neutral-950 dark:text-neutral-50">
         <ThemeProvider>
           <header className="border-b border-neutral-200 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:border-neutral-800 dark:bg-neutral-900/80 dark:supports-[backdrop-filter]:bg-neutral-900/70">
-            <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 sm:px-6">
+            <div className="flex w-full items-center justify-between px-4 py-4 sm:px-6">
               <Link href="/" className="text-base font-semibold">
                 JH
               </Link>
@@ -77,7 +78,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               </nav>
             </div>
           </header>
-          <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6">{children}</main>
+          <main className="w-full px-4 py-10 sm:px-6">{children}</main>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

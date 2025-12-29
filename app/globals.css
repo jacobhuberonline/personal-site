@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes last-lap-fade {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.45;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.last-lap-flash {
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4), rgba(0, 0, 0, 0.85) 65%);
+  animation: last-lap-fade 2.2s ease-out forwards;
+}
+
 :root {
   color-scheme: light dark;
 }

@@ -7,6 +7,13 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    name: "LapQuest",
+    description:
+      "Hardware lap timer dashboard with a race screen, live stats, and run history. Built to pair with a Pico over Web Serial and save results to Supabase.",
+    tech: ["Next.js", "TypeScript", "Supabase", "Web Serial"],
+    url: "/lapquest",
+  },
+  {
     name: "Vest First Responder",
     description:
       "A dedicated information and contact site for the VEST First Responder training program, providing curriculum details, program structure, and an easy way for EMS, fire, and healthcare teams to request training.",

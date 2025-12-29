@@ -58,7 +58,7 @@ export default async function HomePage() {
           {featuredProjects.map((project) => (
             <div
               key={project.name}
-              className="rounded-xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
+              className="flex h-full flex-col rounded-xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
             >
               <div className="flex items-start justify-between">
                 <div>
@@ -70,15 +70,25 @@ export default async function HomePage() {
                   </p>
                 </div>
               </div>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {project.tech.map((tech) => (
-                  <span
-                    key={tech}
-                    className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"
+              <div className="mt-auto flex flex-col gap-3 pt-4 md:flex-row md:items-center md:justify-between">
+                <div className="flex flex-wrap gap-2">
+                  {project.tech.map((tech) => (
+                    <span
+                      key={tech}
+                      className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+                {project.url ? (
+                  <Link
+                    href={project.url}
+                    className="inline-flex text-sm font-semibold text-neutral-900 underline decoration-neutral-300 underline-offset-4 transition hover:decoration-neutral-600 dark:text-neutral-100 dark:decoration-neutral-700 dark:hover:decoration-neutral-400"
                   >
-                    {tech}
-                  </span>
-                ))}
+                    View
+                  </Link>
+                ) : null}
               </div>
             </div>
           ))}

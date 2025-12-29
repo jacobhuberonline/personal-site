@@ -2,6 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 import matter from "gray-matter";
 import { unified } from "unified";
+import type { PluggableList } from "unified";
 import remarkParse from "remark-parse";
 import remarkMdx from "remark-mdx";
 import remarkRehype from "remark-rehype";
@@ -17,10 +18,26 @@ type ParsedFrontmatter = {
   summary?: string;
   tags?: string[];
   published?: boolean;
+  image?: string;
 };
 
 const normalizeSlug = (value?: string | null) =>
   typeof value === "string" ? value.replace(/\.mdx?$/i, "") : "";
+
+// Coerce plugin list to unified v11 types when packages pull mixed unified versions.
+const mdxPlugins = [
+  remarkParse,
+  remarkMdx,
+  remarkRehype,
+  rehypeStringify,
+] as unknown as PluggableList;
+
+const mdxProcessor = unified().use(mdxPlugins);
+
+const renderMdx = async (content: string) => {
+  const processed = await mdxProcessor.process(content);
+  return String(processed.value);
+};
 
 const buildMeta = (
   frontmatter: ParsedFrontmatter,
@@ -43,13 +60,8 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
     const source = await fs.readFile(filePath, "utf8");
     const { content, data } = matter(source);
     const meta = buildMeta(data as ParsedFrontmatter, cleanSlug);
-    const processed = await unified()
-      .use(remarkParse)
-      .use(remarkMdx)
-      .use(remarkRehype)
-      .use(rehypeStringify)
-      .process(content);
-    return { meta, content: String(processed.value) };
+    const processed = await renderMdx(content);
+    return { meta, content: processed };
   };
 
   // Primary: filename match
@@ -70,13 +82,8 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
         );
         if (fmSlug === cleanSlug) {
           const meta = buildMeta(data as ParsedFrontmatter, fmSlug);
-          const processed = await unified()
-            .use(remarkParse)
-            .use(remarkMdx)
-            .use(remarkRehype)
-            .use(rehypeStringify)
-            .process(content);
-          return { meta, content: String(processed.value) };
+          const processed = await renderMdx(content);
+          return { meta, content: processed };
         }
       }
     } catch (fallbackError) {
