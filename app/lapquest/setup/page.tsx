@@ -427,11 +427,11 @@ export default function LapQuestHome() {
 
               <div className="flex flex-wrap gap-3">
                 {startDisabled ? (
-                  <Button disabled className="bg-white text-black hover:bg-zinc-200">
+                  <Button disabled className="w-full bg-white text-black hover:bg-zinc-200">
                     Select
                   </Button>
                 ) : (
-                  <Button asChild className="bg-white text-black hover:bg-zinc-200">
+                  <Button asChild className="w-full bg-white text-black hover:bg-zinc-200">
                     <Link href={`/lapquest/race?${query}`}>Select</Link>
                   </Button>
                 )}
