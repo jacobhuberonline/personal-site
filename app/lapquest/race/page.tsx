@@ -219,13 +219,6 @@ function RacePageContent() {
     let isActive = true;
     const loadCourse = async () => {
       try {
-        const session = await client.auth.getSession();
-        if (!isActive) return;
-        if (!session.data.session) {
-          setSelectedCourse(null);
-          return;
-        }
-
         const result = await client
           .from("courses")
           .select("id, name, lap_distance_in")
@@ -413,18 +406,18 @@ function RacePageContent() {
           : "Align";
 
   const gatePillClass = !serial.connected
-    ? "border-zinc-800/60 bg-zinc-950/40 text-zinc-500"
+    ? "border-slate-200/80 bg-white/80 text-slate-500 dark:border-zinc-800/60 dark:bg-zinc-950/40 dark:text-zinc-500"
     : !statusFresh
-      ? "border-zinc-800/60 bg-zinc-950/50 text-zinc-400"
+      ? "border-slate-200/80 bg-white/80 text-slate-600 dark:border-zinc-800/60 dark:bg-zinc-950/50 dark:text-zinc-400"
       : state.phase === "running" && beamStatus === 0
-        ? "border-rose-500/20 bg-rose-500/5 text-rose-200/80"
+        ? "border-rose-500/30 bg-rose-500/10 text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/5 dark:text-rose-200/80"
         : beamAligned
-          ? "border-emerald-500/20 bg-emerald-500/5 text-emerald-200/80"
-          : "border-rose-500/20 bg-rose-500/5 text-rose-200/80";
+          ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/5 dark:text-emerald-200/80"
+          : "border-rose-500/30 bg-rose-500/10 text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/5 dark:text-rose-200/80";
 
   const timerPillClass = serial.connected
-    ? "border-emerald-500/20 bg-emerald-500/5 text-emerald-200/80"
-    : "border-amber-500/20 bg-amber-500/5 text-amber-200/80";
+    ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/5 dark:text-emerald-200/80"
+    : "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/5 dark:text-amber-200/80";
 
   const gateReady = serial.connected && statusFresh && beamAligned;
   useEffect(() => {
@@ -654,7 +647,7 @@ function RacePageContent() {
 
   if (state.phase === "countdown") {
     return (
-      <main className="min-h-screen bg-black text-white">
+      <main className="min-h-screen bg-white text-slate-900 dark:bg-black dark:text-white">
         <div className="flex min-h-screen w-full items-center justify-center">
           <div className="text-[clamp(96px,18vw,220px)] font-black leading-none">{countdownText}</div>
         </div>
@@ -663,9 +656,9 @@ function RacePageContent() {
   }
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-white text-slate-900 dark:bg-black dark:text-white">
       {showGoOverlay && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white text-slate-900 dark:bg-black dark:text-white">
           <div className="text-[clamp(96px,18vw,240px)] font-black leading-none">GO!</div>
         </div>
       )}
@@ -674,7 +667,7 @@ function RacePageContent() {
       )}
       <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 pt-2 pb-6">
         <header className="flex flex-col items-center justify-between gap-3 md:flex-row md:items-center">
-          <div className="text-[0.7rem] font-semibold uppercase tracking-[0.3em] text-zinc-500">
+          <div className="text-[0.7rem] font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-zinc-500">
             {targetLabel}
           </div>
           <div className="flex flex-wrap items-center justify-center gap-2 md:justify-end">
@@ -686,19 +679,19 @@ function RacePageContent() {
         </header>
 
         {state.phase === "running" && goalPct != null && cfg.target != null && (
-          <div className="mt-2 flex w-full items-center gap-1 text-xs text-zinc-400">
+          <div className="mt-2 flex w-full items-center gap-1 text-xs text-slate-500 dark:text-zinc-400">
             <div className="min-w-[48px] text-left">
               {laps} / {cfg.target}
             </div>
-            <div className="h-4 flex-1 rounded-full bg-zinc-800">
-              <div className="h-4 rounded-full bg-white/80" style={{ width: `${goalPct}%` }} />
+            <div className="h-4 flex-1 rounded-full bg-slate-200 dark:bg-zinc-800">
+              <div className="h-4 rounded-full bg-slate-900/80 dark:bg-white/80" style={{ width: `${goalPct}%` }} />
             </div>
           </div>
         )}
 
         {state.phase === "idle" && instruction && (
-          <div className="mt-4 text-center text-zinc-300">
-            <div className="text-sm font-medium uppercase tracking-[0.2em] text-zinc-500">
+          <div className="mt-4 text-center text-slate-700 dark:text-zinc-300">
+            <div className="text-sm font-medium uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-500">
               {instruction}
             </div>
           </div>
@@ -710,23 +703,23 @@ function RacePageContent() {
               {cfg.mode === "time_trial" || cfg.mode === "free" || cfg.mode === "distance" ? (
                 <div className="grid w-full max-w-6xl items-center gap-12 text-center md:grid-cols-2 md:gap-24 lg:gap-32">
                   <div className="flex flex-col items-center gap-2">
-                    <div className="text-xs uppercase tracking-[0.4em] text-zinc-500">
+                    <div className="text-xs uppercase tracking-[0.4em] text-slate-500 dark:text-zinc-500">
                       {cfg.mode === "time_trial"
                         ? "Time left"
                         : cfg.mode === "distance"
                           ? "Distance left"
                           : "Elapsed"}
                     </div>
-                    <div className="text-[clamp(200px,20vw,360px)] font-black leading-none text-white">
+                    <div className="text-[clamp(200px,20vw,360px)] font-black leading-none text-slate-900 dark:text-white">
                       {cfg.mode === "time_trial" ? (
                         <>
                           {timeTrialLeftSec ?? 0}
-                          <span className="ml-2 text-[0.35em] font-semibold text-zinc-400">s</span>
+                          <span className="ml-2 text-[0.35em] font-semibold text-slate-600 dark:text-zinc-400">s</span>
                         </>
                       ) : cfg.mode === "distance" ? (
                         <>
                           {distanceRemainingDisplay?.value ?? "—"}
-                          <span className="ml-2 text-[0.35em] font-semibold text-zinc-400">
+                          <span className="ml-2 text-[0.35em] font-semibold text-slate-600 dark:text-zinc-400">
                             {distanceRemainingDisplay?.unit ?? ""}
                           </span>
                         </>
@@ -738,22 +731,22 @@ function RacePageContent() {
                     </div>
                   </div>
                   <div className="flex flex-col items-center gap-2">
-                    <div className="text-xs uppercase tracking-[0.4em] text-zinc-500">Laps</div>
-                    <div className="text-[clamp(200px,20vw,360px)] font-black leading-none tracking-[0.02em] text-white">
+                    <div className="text-xs uppercase tracking-[0.4em] text-slate-500 dark:text-zinc-500">Laps</div>
+                    <div className="text-[clamp(200px,20vw,360px)] font-black leading-none tracking-[0.02em] text-slate-900 dark:text-white">
                       {laps}
                     </div>
                   </div>
                 </div>
               ) : (
                 <div className="flex flex-col items-center">
-                  <div className="text-5xl font-semibold text-zinc-300">Laps</div>
+                  <div className="text-5xl font-semibold text-slate-700 dark:text-zinc-300">Laps</div>
                   <div className="text-[clamp(240px,28vw,360px)] font-black leading-none tracking-[0.02em]">
                     {laps}
                   </div>
                 </div>
               )}
 
-              <div className="flex flex-wrap justify-center gap-8 text-2xl text-zinc-300">
+              <div className="flex flex-wrap justify-center gap-8 text-2xl text-slate-700 dark:text-zinc-300">
                 <div>Last lap: {lastLapMs != null ? `${msToSec(lastLapMs)}s` : "—"}</div>
                 <div>
                   Best this run: {bestLapMs != null && bestLapMs !== Infinity ? `${msToSec(bestLapMs)}s` : "—"}
@@ -766,24 +759,24 @@ function RacePageContent() {
             </div>
           ) : state.phase === "idle" ? (
             <div className="flex flex-col items-center gap-3">
-              <div className="text-3xl font-black text-zinc-100 md:text-4xl">{preStartTitle}</div>
-              <div className="text-base text-zinc-400 md:text-lg">{preStartSubtitle}</div>
+              <div className="text-3xl font-black text-slate-900 dark:text-zinc-100 md:text-4xl">{preStartTitle}</div>
+              <div className="text-base text-slate-600 dark:text-zinc-400 md:text-lg">{preStartSubtitle}</div>
               {!serial.connected && serial.status !== "Not connected" && (
-                <div className="text-xs text-zinc-500">{serial.status}</div>
+                <div className="text-xs text-slate-500 dark:text-zinc-500">{serial.status}</div>
               )}
               {!serial.supported && (
-                <div className="text-xs text-amber-200">Web Serial isn’t available here. Use Chrome or Edge on desktop.</div>
+                <div className="text-xs text-amber-700 dark:text-amber-200">Web Serial isn’t available here. Use Chrome or Edge on desktop.</div>
               )}
             </div>
           ) : (
             <TooltipProvider delayDuration={200}>
-              <div className="w-full max-w-3xl rounded-3xl border border-zinc-800 bg-zinc-950/60 p-6 text-left">
-                <div className="text-xs font-semibold uppercase tracking-[0.3em] text-zinc-500">Race summary</div>
-              {selectedCourse && (
-                <div className="mt-2 text-sm font-semibold text-zinc-400">
-                  {selectedCourse.name}
-                  {selectedCourse.lap_distance_in && lapDistanceTooltip ? (
-                    <Tooltip>
+              <div className="w-full max-w-3xl rounded-3xl border border-slate-200 bg-white/80 p-6 text-left dark:border-zinc-800 dark:bg-zinc-950/60">
+                <div className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-zinc-500">Race summary</div>
+                {selectedCourse && (
+                  <div className="mt-2 text-sm font-semibold text-slate-600 dark:text-zinc-400">
+                    {selectedCourse.name}
+                    {selectedCourse.lap_distance_in && lapDistanceTooltip ? (
+                      <Tooltip>
                         <TooltipTrigger asChild>
                           <span className="cursor-help">
                             {" "}
@@ -795,28 +788,28 @@ function RacePageContent() {
                     ) : (
                       ""
                     )}
-                </div>
-              )}
-              {cfg.mode === "distance" && distanceTargetDisplay && (
-                <div className="mt-2 text-sm font-semibold text-zinc-400">
-                  Target distance: {distanceTargetDisplay.value} {distanceTargetDisplay.unit}
-                  {distanceTargetLaps != null ? ` · ${distanceTargetLaps} laps` : ""}
-                </div>
-              )}
-                <div className="mt-5 grid gap-4 text-zinc-200 sm:grid-cols-2 lg:grid-cols-3">
-                  <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-4">
-                    <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">Total time</div>
+                  </div>
+                )}
+                {cfg.mode === "distance" && distanceTargetDisplay && (
+                  <div className="mt-2 text-sm font-semibold text-slate-600 dark:text-zinc-400">
+                    Target distance: {distanceTargetDisplay.value} {distanceTargetDisplay.unit}
+                    {distanceTargetLaps != null ? ` · ${distanceTargetLaps} laps` : ""}
+                  </div>
+                )}
+                <div className="mt-5 grid gap-4 text-slate-700 dark:text-zinc-200 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="rounded-2xl border border-slate-200 bg-slate-100 p-4 dark:border-zinc-800/80 dark:bg-zinc-900/40">
+                    <div className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-500">Total time</div>
                     <div className="mt-2 text-3xl font-bold">
                       {raceDurationMs != null ? `${msToSec(raceDurationMs)}s` : "—"}
                     </div>
                   </div>
-                  <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-4">
-                    <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">Total laps</div>
+                  <div className="rounded-2xl border border-slate-200 bg-slate-100 p-4 dark:border-zinc-800/80 dark:bg-zinc-900/40">
+                    <div className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-500">Total laps</div>
                     <div className="mt-2 text-3xl font-bold">{laps}</div>
                   </div>
                   {totalDistanceLabel && (
-                    <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-4">
-                      <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">Total distance</div>
+                    <div className="rounded-2xl border border-slate-200 bg-slate-100 p-4 dark:border-zinc-800/80 dark:bg-zinc-900/40">
+                      <div className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-500">Total distance</div>
                       {totalDistanceTooltip ? (
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -829,20 +822,20 @@ function RacePageContent() {
                       )}
                     </div>
                   )}
-                  <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-4">
-                    <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">Average lap</div>
+                  <div className="rounded-2xl border border-slate-200 bg-slate-100 p-4 dark:border-zinc-800/80 dark:bg-zinc-900/40">
+                    <div className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-500">Average lap</div>
                     <div className="mt-2 text-3xl font-bold">
                       {avgLapMs != null ? `${msToSec(avgLapMs)}s` : "—"}
                     </div>
                   </div>
-                  <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-4">
-                  <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">Best lap</div>
-                  <div className="mt-2 text-3xl font-bold">
-                    {bestLapMs != null && bestLapMs !== Infinity ? `${msToSec(bestLapMs)}s` : "—"}
+                  <div className="rounded-2xl border border-slate-200 bg-slate-100 p-4 dark:border-zinc-800/80 dark:bg-zinc-900/40">
+                    <div className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-500">Best lap</div>
+                    <div className="mt-2 text-3xl font-bold">
+                      {bestLapMs != null && bestLapMs !== Infinity ? `${msToSec(bestLapMs)}s` : "—"}
+                    </div>
                   </div>
-                </div>
-                  <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-4">
-                    <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">Last lap</div>
+                  <div className="rounded-2xl border border-slate-200 bg-slate-100 p-4 dark:border-zinc-800/80 dark:bg-zinc-900/40">
+                    <div className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-500">Last lap</div>
                     <div className="mt-2 text-3xl font-bold">
                       {lastLapMs != null ? `${msToSec(lastLapMs)}s` : "—"}
                     </div>
@@ -856,7 +849,7 @@ function RacePageContent() {
             <Button
               onClick={onPrimary}
               disabled={primaryDisabled}
-              className={`h-20 text-2xl font-black ${state.phase === "finished" ? "bg-white text-black hover:bg-zinc-200" : ""}`}
+              className={`h-20 text-2xl font-black ${state.phase === "finished" ? "bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200" : ""}`}
             >
               {primaryLabel}
             </Button>
@@ -865,14 +858,14 @@ function RacePageContent() {
                 <Button
                   asChild
                   variant="outline"
-                  className="h-16 flex-1 border-zinc-700 text-lg font-semibold text-zinc-200 hover:bg-zinc-900"
+                  className="h-16 flex-1 border-slate-300 text-lg font-semibold text-slate-700 hover:bg-slate-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-900"
                 >
                   <Link href="/lapquest/setup">New run</Link>
                 </Button>
                 <Button
                   asChild
                   variant="outline"
-                  className="h-16 flex-1 border-zinc-700 text-lg font-semibold text-zinc-200 hover:bg-zinc-900"
+                  className="h-16 flex-1 border-slate-300 text-lg font-semibold text-slate-700 hover:bg-slate-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-900"
                 >
                   <Link href="/lapquest/history">My runs</Link>
                 </Button>
@@ -890,8 +883,8 @@ export default function RacePage() {
   return (
     <Suspense
       fallback={
-        <main className="min-h-screen bg-black text-white">
-          <div className="flex min-h-screen items-center justify-center text-zinc-400">Loading race…</div>
+        <main className="min-h-screen bg-white text-slate-900 dark:bg-black dark:text-white">
+          <div className="flex min-h-screen items-center justify-center text-slate-600 dark:text-zinc-400">Loading race…</div>
         </main>
       }
     >

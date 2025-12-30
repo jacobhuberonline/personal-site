@@ -7,8 +7,8 @@ import { supabase } from "@/lib/supabaseClient";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/lapquest/setup", label: "Setup" },
-  { href: "/lapquest/history", label: "My runs" },
+  { href: "/lapquest/setup", label: "Setup", requiresAuth: false },
+  { href: "/lapquest/history", label: "My runs", requiresAuth: true },
 ];
 
 export function LapquestNav() {
@@ -65,9 +65,12 @@ export function LapquestNav() {
   );
 
   return (
-    <div className="w-full border-b border-zinc-900 bg-black text-white">
+    <div className="w-full border-b border-slate-200 bg-white text-slate-900 dark:border-zinc-900 dark:bg-black dark:text-white">
       <div className="mx-auto flex w-full max-w-5xl items-center gap-3 px-4 py-3">
-        <Link href="/lapquest" className="flex items-center gap-3 text-lg font-semibold text-zinc-200">
+        <Link
+          href="/lapquest"
+          className="flex items-center gap-3 text-lg font-semibold text-slate-700 dark:text-zinc-200"
+        >
           <img src="/lapquest/icon.svg" alt="LapQuest" className="h-7 w-7" />
           <span className="tracking-[0.3em] uppercase">LapQuest</span>
         </Link>
@@ -78,12 +81,12 @@ export function LapquestNav() {
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={(event) => void handleProtectedNav(event, item.href)}
+                onClick={item.requiresAuth ? (event) => void handleProtectedNav(event, item.href) : undefined}
                 className={cn(
                   "rounded-full border px-3 py-1 transition",
                   active
-                    ? "border-white/40 bg-white/10 text-white"
-                    : "border-white/10 text-zinc-300 hover:border-white/30 hover:text-white"
+                    ? "border-slate-300 bg-slate-100 text-slate-900 dark:border-white/40 dark:bg-white/10 dark:text-white"
+                    : "border-slate-200 text-slate-600 hover:border-slate-400 hover:text-slate-900 dark:border-white/10 dark:text-zinc-300 dark:hover:border-white/30 dark:hover:text-white"
                 )}
               >
                 {item.label}
@@ -93,7 +96,7 @@ export function LapquestNav() {
           <button
             type="button"
             onClick={handleAuthClick}
-            className="rounded-full border border-white/10 px-3 py-1 text-sm font-semibold text-zinc-300 transition hover:border-white/30 hover:text-white"
+            className="rounded-full border border-slate-200 px-3 py-1 text-sm font-semibold text-slate-600 transition hover:border-slate-400 hover:text-slate-900 dark:border-white/10 dark:text-zinc-300 dark:hover:border-white/30 dark:hover:text-white"
           >
             {signedIn ? "Log out" : "Log in"}
           </button>

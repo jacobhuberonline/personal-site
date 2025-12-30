@@ -30,10 +30,10 @@ export default function LapQuestLanding() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-white text-slate-900 dark:bg-black dark:text-white">
       <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 py-6">
         <section
-          className="relative mt-8 overflow-hidden rounded-3xl border border-zinc-900 bg-black/80 px-6 py-12 text-center sm:px-10"
+          className="relative mt-8 overflow-hidden rounded-3xl border border-slate-200 bg-white/80 px-6 py-12 text-center dark:border-zinc-900 dark:bg-black/80 sm:px-10"
           style={{
             backgroundImage: "url('/lapquest/hero.png')",
             backgroundSize: "cover",
@@ -41,52 +41,52 @@ export default function LapQuestLanding() {
           }}
         >
           <div className="pointer-events-none absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/15 to-black/55" />
+            <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-white/40 to-white/80 dark:from-black/30 dark:via-black/15 dark:to-black/55" />
           </div>
           <div className="relative">
-          <div className="text-sm font-medium uppercase tracking-[0.4em] text-zinc-500">
-            LapQuest
-          </div>
-          <h1 className="mt-4 text-4xl font-semibold text-white sm:text-5xl">
-            Ready, set… GO!
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-zinc-400">
-            LapQuest turns your hallway, backyard, or driveway into a mini race track. Run through the finish line to count laps, race the clock, and try to beat your best time.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            {signedIn ? (
-              <>
-                <Button asChild className="bg-white text-black hover:bg-zinc-200">
-                  <Link href="/lapquest/setup">Start racing</Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  className="border-zinc-700 text-zinc-200 hover:bg-zinc-900"
-                >
-                  <Link href="/lapquest/history">My runs</Link>
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button asChild className="bg-white text-black hover:bg-zinc-200">
-                  <Link href="/lapquest/login">Log in to race</Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  className="border-zinc-700 text-zinc-200 hover:bg-zinc-900"
-                >
-                  <Link href="#how-it-works">How it works</Link>
-                </Button>
-              </>
-            )}
-          </div>
-          {!signedIn && (
-            <p className="mt-4 text-sm text-zinc-500">
-              Sign in to start races and save your scores.
+            <div className="text-sm font-medium uppercase tracking-[0.4em] text-slate-500 dark:text-zinc-500">
+              LapQuest
+            </div>
+            <h1 className="mt-4 text-4xl font-semibold text-slate-900 dark:text-white sm:text-5xl">
+              Ready, set… GO!
+            </h1>
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600 dark:text-zinc-400">
+              LapQuest turns your hallway, backyard, or driveway into a mini race track. Run through the finish line to count laps, race the clock, and try to beat your best time.
             </p>
-          )}
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              {signedIn ? (
+                <>
+                  <Button asChild className="bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200">
+                    <Link href="/lapquest/setup">Start racing</Link>
+                  </Button>
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-900"
+                  >
+                    <Link href="/lapquest/history">My runs</Link>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button asChild className="bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200">
+                    <Link href="/lapquest/login">Log in to race</Link>
+                  </Button>
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-900"
+                  >
+                    <Link href="#how-it-works">How it works</Link>
+                  </Button>
+                </>
+              )}
+            </div>
+            {!signedIn && (
+              <p className="mt-4 text-sm text-slate-500 dark:text-zinc-500">
+                Sign in to start races and save your scores.
+              </p>
+            )}
           </div>
         </section>
 
@@ -107,21 +107,21 @@ export default function LapQuestLanding() {
           ].map((item) => (
             <div
               key={item.title}
-              className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-5"
+              className="rounded-2xl border border-slate-200 bg-white/80 p-5 dark:border-zinc-800 dark:bg-zinc-950/70"
             >
-              <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">
+              <div className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-500">
                 {item.title}
               </div>
-              <p className="mt-3 text-sm text-zinc-300">{item.body}</p>
+              <p className="mt-3 text-sm text-slate-700 dark:text-zinc-300">{item.body}</p>
             </div>
           ))}
         </section>
 
-        <section className="mt-12 rounded-2xl border border-zinc-800 bg-zinc-950/70 p-6 text-left">
-          <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">
+        <section className="mt-12 rounded-2xl border border-slate-200 bg-white/80 p-6 text-left dark:border-zinc-800 dark:bg-zinc-950/70">
+          <div className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-500">
             What you need (grown-up help!)
           </div>
-          <div className="mt-3 grid gap-3 text-sm text-zinc-300 sm:grid-cols-2">
+          <div className="mt-3 grid gap-3 text-sm text-slate-700 dark:text-zinc-300 sm:grid-cols-2">
             <div>Raspberry Pi Pico (the tiny race brain) + USB cable</div>
             <div>Beam gate sensor (the finish line)</div>
             <div>A laptop/tablet + LapQuest in a browser</div>

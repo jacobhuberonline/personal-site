@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTheme } from "next-themes";
 import { isSupabaseConfigured, supabase } from "@/lib/supabaseClient";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { Button } from "@/components/ui/button";
@@ -123,6 +124,7 @@ export default function HistoryPage() {
   const [lapsError, setLapsError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const { toast } = useToast();
+  const { resolvedTheme } = useTheme();
   const hasRuns = runs.length > 0;
 
   const summary = useMemo(() => {
@@ -272,17 +274,23 @@ export default function HistoryPage() {
       .filter((r) => r.avgLapSec != null);
   }, [runs]);
 
+  const chartColors = useMemo(() => {
+    return resolvedTheme === "dark"
+      ? { axis: "#3f3f46", tick: "#a1a1aa", line: "#e4e4e7" }
+      : { axis: "#cbd5e1", tick: "#64748b", line: "#0f172a" };
+  }, [resolvedTheme]);
+
   const trendTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload?.length) return null;
     const data = payload[0]?.payload;
     if (!data) return null;
     return (
-      <div className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-200">
-        <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">{label}</div>
-        <div className="mt-1 text-zinc-100">
+      <div className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200">
+        <div className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-500">{label}</div>
+        <div className="mt-1 text-slate-900 dark:text-zinc-100">
           Avg lap: {data.avgLapSec}s
         </div>
-        <div className="text-xs text-zinc-400">
+        <div className="text-xs text-slate-600 dark:text-zinc-400">
           Laps: {data.laps} · Duration: {formatDurationMs(data.durationSec * 1000)}
         </div>
       </div>
@@ -299,35 +307,35 @@ export default function HistoryPage() {
   }, [lapsForRun]);
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-white text-slate-900 dark:bg-black dark:text-white">
       <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 py-6">
-        <div className="mt-4 text-center text-zinc-300">
-          <h1 className="mt-3 text-3xl font-semibold text-white sm:text-4xl">My runs</h1>
-          <p className="mt-2 text-zinc-400">
+        <div className="mt-4 text-center text-slate-700 dark:text-zinc-300">
+          <h1 className="mt-3 text-3xl font-semibold text-slate-900 dark:text-white sm:text-4xl">My runs</h1>
+          <p className="mt-2 text-slate-600 dark:text-zinc-400">
             See your past sessions at a glance. Each run shows the goal, total time, and laps.
           </p>
         </div>
 
         <div className="mt-8 grid gap-4 md:grid-cols-3">
-          <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-4 text-center">
-            <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">Runs</div>
-            <div className="mt-2 text-3xl font-bold text-white">{summary.runs}</div>
+          <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 text-center dark:border-zinc-800 dark:bg-zinc-950/70">
+            <div className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-500">Runs</div>
+            <div className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{summary.runs}</div>
           </div>
-          <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-4 text-center">
-            <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">Total time</div>
-            <div className="mt-2 text-3xl font-bold text-white">{formatDurationMs(summary.totalTimeMs)}</div>
+          <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 text-center dark:border-zinc-800 dark:bg-zinc-950/70">
+            <div className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-500">Total time</div>
+            <div className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{formatDurationMs(summary.totalTimeMs)}</div>
           </div>
-          <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-4 text-center">
-            <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">Total laps</div>
-            <div className="mt-2 text-3xl font-bold text-white">{summary.totalLaps}</div>
+          <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 text-center dark:border-zinc-800 dark:bg-zinc-950/70">
+            <div className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-500">Total laps</div>
+            <div className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{summary.totalLaps}</div>
           </div>
         </div>
 
-        <div className="mt-8 rounded-2xl border border-zinc-800 bg-zinc-950/70 p-4">
+        <div className="mt-8 rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-zinc-800 dark:bg-zinc-950/70">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <div className="text-sm font-semibold text-zinc-100">Recent trend</div>
-              <div className="text-xs text-zinc-500">Average lap time per run. Lower is faster.</div>
+              <div className="text-sm font-semibold text-slate-900 dark:text-zinc-100">Recent trend</div>
+              <div className="text-xs text-slate-500 dark:text-zinc-500">Average lap time per run. Lower is faster.</div>
             </div>
           </div>
           <div className="mt-4 h-[280px]">
@@ -336,14 +344,14 @@ export default function HistoryPage() {
                 <LineChart data={chartData}>
                   <XAxis
                     dataKey="date"
-                    stroke="#3f3f46"
-                    tick={{ fill: "#a1a1aa", fontSize: 12 }}
-                    tickLine={{ stroke: "#3f3f46" }}
+                    stroke={chartColors.axis}
+                    tick={{ fill: chartColors.tick, fontSize: 12 }}
+                    tickLine={{ stroke: chartColors.axis }}
                   />
                   <YAxis
-                    stroke="#3f3f46"
-                    tick={{ fill: "#a1a1aa", fontSize: 12 }}
-                    tickLine={{ stroke: "#3f3f46" }}
+                    stroke={chartColors.axis}
+                    tick={{ fill: chartColors.tick, fontSize: 12 }}
+                    tickLine={{ stroke: chartColors.axis }}
                     tickFormatter={(value) => `${value}s`}
                   />
                   <Tooltip
@@ -352,7 +360,7 @@ export default function HistoryPage() {
                   <Line
                     type="monotone"
                     dataKey="avgLapSec"
-                    stroke="#e4e4e7"
+                    stroke={chartColors.line}
                     strokeWidth={2}
                     dot={{ r: 3, strokeWidth: 0 }}
                   />
@@ -360,7 +368,7 @@ export default function HistoryPage() {
               </ResponsiveContainer>
             )}
             {mounted && !hasRuns && (
-              <div className="flex h-full flex-col items-center justify-center gap-3 text-center text-zinc-400">
+              <div className="flex h-full flex-col items-center justify-center gap-3 text-center text-slate-500 dark:text-zinc-400">
                 <div className="text-sm">No runs yet.</div>
                 <Button asChild className="h-10 px-4 text-sm font-semibold">
                   <a href="/lapquest/setup">Start a run</a>
@@ -370,7 +378,7 @@ export default function HistoryPage() {
           </div>
         </div>
 
-        <h2 className="mt-8 text-2xl font-semibold text-white">All runs</h2>
+        <h2 className="mt-8 text-2xl font-semibold text-slate-900 dark:text-white">All runs</h2>
         <div className="mt-4 grid gap-4">
           {runs.map((r) => {
             const avgLapMs = r.total_laps > 0 ? r.duration_ms / r.total_laps : null;
@@ -389,19 +397,19 @@ export default function HistoryPage() {
                       ? formatDistanceTarget(r.target, r.target_unit)
                       : "—";
             return (
-              <div key={r.id} className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-4">
+              <div key={r.id} className="rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-zinc-800 dark:bg-zinc-950/70">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <div className="text-lg font-semibold text-zinc-100">
+                    <div className="text-lg font-semibold text-slate-900 dark:text-zinc-100">
                       {formatRunDateTime(r.started_at)}
                     </div>
-                    <div className="mt-1 text-sm text-zinc-400">Mode: {formatModeLabel(r.mode)}</div>
+                    <div className="mt-1 text-sm text-slate-600 dark:text-zinc-400">Mode: {formatModeLabel(r.mode)}</div>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
                     <Button
                       type="button"
                       variant="outline"
-                      className="h-9 border-zinc-700 text-zinc-200 hover:bg-zinc-900"
+                      className="h-9 border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-900"
                       onClick={() => {
                         setLapsError(null);
                         setLapsOpenRun(r);
@@ -412,7 +420,7 @@ export default function HistoryPage() {
                     <Button
                       type="button"
                       variant="outline"
-                      className="h-9 w-9 border-rose-500/40 p-0 text-rose-200 hover:border-rose-500/70 hover:bg-rose-500/10 hover:text-rose-100"
+                      className="h-9 w-9 border-rose-400/60 p-0 text-rose-700 hover:border-rose-500/80 hover:bg-rose-500/10 hover:text-rose-800 dark:border-rose-500/40 dark:text-rose-200 dark:hover:border-rose-500/70 dark:hover:text-rose-100"
                       onClick={() => setConfirmRun(r)}
                       disabled={deletingId === r.id}
                       aria-label="Delete run"
@@ -426,22 +434,22 @@ export default function HistoryPage() {
                     </Button>
                   </div>
                 </div>
-                <div className="mt-4 grid gap-3 text-sm text-zinc-200 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="mt-4 grid gap-3 text-sm text-slate-700 dark:text-zinc-200 sm:grid-cols-2 lg:grid-cols-4">
                   <div>
-                    <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">Goal</div>
-                    <div className="mt-1 text-base font-semibold text-zinc-100">{goalLabel}</div>
+                    <div className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-500">Goal</div>
+                    <div className="mt-1 text-base font-semibold text-slate-900 dark:text-zinc-100">{goalLabel}</div>
                   </div>
                   <div>
-                    <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">Total time</div>
-                    <div className="mt-1 text-base font-semibold text-zinc-100">{formatDurationMs(r.duration_ms)}</div>
+                    <div className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-500">Total time</div>
+                    <div className="mt-1 text-base font-semibold text-slate-900 dark:text-zinc-100">{formatDurationMs(r.duration_ms)}</div>
                   </div>
                   <div>
-                    <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">Total laps</div>
-                    <div className="mt-1 text-base font-semibold text-zinc-100">{r.total_laps}</div>
+                    <div className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-500">Total laps</div>
+                    <div className="mt-1 text-base font-semibold text-slate-900 dark:text-zinc-100">{r.total_laps}</div>
                   </div>
                   <div>
-                    <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">Avg lap</div>
-                    <div className="mt-1 text-base font-semibold text-zinc-100">
+                    <div className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-500">Avg lap</div>
+                    <div className="mt-1 text-base font-semibold text-slate-900 dark:text-zinc-100">
                       {avgLapMs != null ? `${(avgLapMs / 1000).toFixed(1)}s` : "—"}
                     </div>
                   </div>
@@ -452,15 +460,15 @@ export default function HistoryPage() {
         </div>
 
         <Dialog open={Boolean(confirmRun)} onOpenChange={(open) => (!open ? setConfirmRun(null) : null)}>
-          <DialogContent className="border-zinc-800 bg-zinc-950 text-zinc-100">
+          <DialogContent className="border-slate-200 bg-white text-slate-900 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100">
             <DialogHeader>
               <DialogTitle>Delete this run?</DialogTitle>
-              <DialogDescription className="text-zinc-400">
+              <DialogDescription className="text-slate-600 dark:text-zinc-400">
                 This will permanently remove the run and its laps.
               </DialogDescription>
             </DialogHeader>
             {confirmRun && (
-              <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-3 text-sm text-zinc-300">
+              <div className="rounded-xl border border-slate-200 bg-slate-100 p-3 text-sm text-slate-700 dark:border-zinc-800 dark:bg-zinc-900/40 dark:text-zinc-300">
                 {formatRunDateTime(confirmRun.started_at)} · {confirmRun.total_laps} laps ·{" "}
                 {(confirmRun.duration_ms / 1000).toFixed(1)}s
               </div>
@@ -469,7 +477,7 @@ export default function HistoryPage() {
               <DialogClose asChild>
                 <Button
                   variant="outline"
-                  className="border-zinc-700 text-zinc-200 hover:bg-zinc-900"
+                  className="border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-900"
                   disabled={deletingId === confirmRun?.id}
                 >
                   Cancel
@@ -487,63 +495,63 @@ export default function HistoryPage() {
         </Dialog>
 
         <Dialog open={Boolean(lapsOpenRun)} onOpenChange={(open) => (!open ? setLapsOpenRun(null) : null)}>
-          <DialogContent className="border-zinc-800 bg-zinc-950 text-zinc-100">
+          <DialogContent className="border-slate-200 bg-white text-slate-900 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100">
             <DialogHeader>
               <DialogTitle>Lap details</DialogTitle>
-              <DialogDescription className="text-zinc-400">
+              <DialogDescription className="text-slate-600 dark:text-zinc-400">
                 {lapsOpenRun
                   ? `${formatRunDateTime(lapsOpenRun.started_at)} · ${lapsOpenRun.total_laps} laps · ${formatDurationMs(lapsOpenRun.duration_ms)}`
                   : ""}
               </DialogDescription>
             </DialogHeader>
             {lapsLoading && (
-              <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4 text-sm text-zinc-400">
+              <div className="rounded-xl border border-slate-200 bg-slate-100 p-4 text-sm text-slate-600 dark:border-zinc-800 dark:bg-zinc-900/40 dark:text-zinc-400">
                 Loading laps…
               </div>
             )}
             {!lapsLoading && lapsError && (
-              <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-4 text-sm text-rose-100">
+              <div className="rounded-xl border border-rose-400/60 bg-rose-500/10 p-4 text-sm text-rose-700 dark:border-rose-500/40 dark:text-rose-100">
                 {lapsError}
               </div>
             )}
             {!lapsLoading && !lapsError && lapsForRun && lapsForRun.length === 0 && (
-              <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4 text-sm text-zinc-400">
+              <div className="rounded-xl border border-slate-200 bg-slate-100 p-4 text-sm text-slate-600 dark:border-zinc-800 dark:bg-zinc-900/40 dark:text-zinc-400">
                 No laps recorded for this run.
               </div>
             )}
             {!lapsLoading && !lapsError && lapsForRun && lapsForRun.length > 0 && (
               <div className="space-y-4">
                 {lapSummary && (
-                  <div className="grid gap-3 text-sm text-zinc-200 sm:grid-cols-2">
-                    <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-3">
-                      <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">Best lap</div>
-                      <div className="mt-1 text-lg font-semibold text-zinc-100">
+                  <div className="grid gap-3 text-sm text-slate-700 dark:text-zinc-200 sm:grid-cols-2">
+                    <div className="rounded-xl border border-slate-200 bg-slate-100 p-3 dark:border-zinc-800 dark:bg-zinc-900/40">
+                      <div className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-500">Best lap</div>
+                      <div className="mt-1 text-lg font-semibold text-slate-900 dark:text-zinc-100">
                         {formatLapMs(lapSummary.best)}
                       </div>
                     </div>
-                    <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-3">
-                      <div className="text-xs uppercase tracking-[0.2em] text-zinc-500">Average lap</div>
-                      <div className="mt-1 text-lg font-semibold text-zinc-100">
+                    <div className="rounded-xl border border-slate-200 bg-slate-100 p-3 dark:border-zinc-800 dark:bg-zinc-900/40">
+                      <div className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-500">Average lap</div>
+                      <div className="mt-1 text-lg font-semibold text-slate-900 dark:text-zinc-100">
                         {formatLapMs(lapSummary.avg)}
                       </div>
                     </div>
                   </div>
                 )}
-                <div className="rounded-xl border border-zinc-800 bg-zinc-900/30">
+                <div className="rounded-xl border border-slate-200 bg-slate-50 dark:border-zinc-800 dark:bg-zinc-900/30">
                   <Table>
                     <TableHeader>
-                      <TableRow className="border-zinc-800">
-                        <TableHead className="text-xs uppercase tracking-[0.2em] text-zinc-500">Lap</TableHead>
-                        <TableHead className="text-xs uppercase tracking-[0.2em] text-zinc-500">Lap time</TableHead>
-                        <TableHead className="text-xs uppercase tracking-[0.2em] text-zinc-500">Elapsed</TableHead>
+                      <TableRow className="border-slate-200 dark:border-zinc-800">
+                        <TableHead className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-500">Lap</TableHead>
+                        <TableHead className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-500">Lap time</TableHead>
+                        <TableHead className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-500">Elapsed</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {lapsForRun.map((lap) => (
-                        <TableRow key={lap.n} className="border-zinc-800">
-                          <TableCell className="font-semibold text-zinc-100">{lap.n}</TableCell>
-                          <TableCell className="text-zinc-200">{formatLapMs(lap.lap_time_ms)}</TableCell>
-                          <TableCell className="text-zinc-400">{formatElapsedMs(lap.elapsed_ms)}</TableCell>
+                        <TableRow key={lap.n} className="border-slate-200 dark:border-zinc-800">
+                          <TableCell className="font-semibold text-slate-900 dark:text-zinc-100">{lap.n}</TableCell>
+                          <TableCell className="text-slate-700 dark:text-zinc-200">{formatLapMs(lap.lap_time_ms)}</TableCell>
+                          <TableCell className="text-slate-600 dark:text-zinc-400">{formatElapsedMs(lap.elapsed_ms)}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -553,7 +561,7 @@ export default function HistoryPage() {
             )}
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="outline" className="border-zinc-700 text-zinc-200 hover:bg-zinc-900">
+                <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-900">
                   Close
                 </Button>
               </DialogClose>
