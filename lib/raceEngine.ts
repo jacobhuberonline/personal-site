@@ -63,7 +63,7 @@ export function reduceRace(cfg: RaceConfig, state: RaceState, ev: RaceEvent): Ra
     case "countdown": {
       if (ev.type === "RESET") return { phase: "idle" };
       if (ev.type === "BTN") return { phase: "idle" }; // second press cancels
-      if (ev.type === "TICK" && now >= state.endsAtPerf) return startRunning(state.startedAtPerf);
+      if (ev.type === "TICK" && now >= state.endsAtPerf) return startRunning(now);
       return state;
     }
 
