@@ -5,12 +5,13 @@ export type RaceConfig = {
   target?: number;          // laps for first_to_n/distance, seconds for time_trial
   countdownSec: number;     // e.g. 3
   lapLockoutMs: number;     // e.g. 2000
+  startBeamDelayMs: number; // ignore beam for this long after race starts
 };
 
 export type RaceState =
   | { phase: "idle" }
   | { phase: "countdown"; endsAtPerf: number; startedAtPerf: number }
-  | { phase: "running"; startedAtPerf: number; lastLapAtPerf?: number; laps: number; lapTimesMs: number[] }
+  | { phase: "running"; startedAtPerf: number; lastLapAtPerf?: number; lapReadyAtPerf?: number; laps: number; lapTimesMs: number[] }
   | { phase: "finished"; startedAtPerf: number; endedAtPerf: number; laps: number; lapTimesMs: number[] };
 
 export function initialRaceState(): RaceState {
@@ -35,7 +36,8 @@ export function reduceRace(cfg: RaceConfig, state: RaceState, ev: RaceEvent): Ra
 
   // Helper: start running
   const startRunning = (startedAtPerf: number) => {
-    return { phase: "running", startedAtPerf, laps: 0, lapTimesMs: [] } as RaceState;
+    const lapReadyAtPerf = cfg.startBeamDelayMs > 0 ? now + cfg.startBeamDelayMs : undefined;
+    return { phase: "running", startedAtPerf, lapReadyAtPerf, laps: 0, lapTimesMs: [] } as RaceState;
   };
 
   // Helper: finish
@@ -79,6 +81,7 @@ export function reduceRace(cfg: RaceConfig, state: RaceState, ev: RaceEvent): Ra
       if (ev.type === "BTN") return finish(state); // toggle stop
 
       if (ev.type === "BEAM") {
+        if (state.lapReadyAtPerf != null && now < state.lapReadyAtPerf) return state;
         // lockout
         const last = state.lastLapAtPerf;
         if (last != null && now - last < cfg.lapLockoutMs) return state;

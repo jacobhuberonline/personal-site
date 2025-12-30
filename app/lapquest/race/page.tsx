@@ -1,15 +1,14 @@
 "use client";
 
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useLapquestSerial } from "@/components/lapquest/serial-provider";
 import { initialRaceState, reduceRace, type Mode, type RaceConfig, type RaceState } from "@/lib/raceEngine";
 import { Button } from "@/components/ui/button";
-import { ToastAction } from "@/components/ui/toast";
 import { isSupabaseConfigured, supabase } from "@/lib/supabaseClient";
 import { useToast } from "@/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import Link from "next/link";
 
 type Course = {
   id: string;
@@ -68,14 +67,6 @@ function formatElapsed(ms: number) {
 }
 
 function RacePageContent() {
-  const scrollOffset = 80;
-  const ensureHeaderHidden = useCallback(() => {
-    if (typeof window === "undefined") return;
-    if (window.scrollY < scrollOffset) {
-      window.scrollTo({ top: scrollOffset, left: 0, behavior: "auto" });
-    }
-  }, [scrollOffset]);
-
   const searchParams = useSearchParams();
   const modeParam = searchParams.get("mode");
   const targetParam = searchParams.get("target");
@@ -120,6 +111,7 @@ function RacePageContent() {
       target: mode === "free" ? undefined : mode === "distance" ? distanceTargetLaps ?? undefined : target,
       countdownSec: 3,
       lapLockoutMs: 2000,
+      startBeamDelayMs: 1200,
     }),
     [distanceTargetLaps, mode, target]
   );
@@ -398,9 +390,10 @@ function RacePageContent() {
   const showGoOverlay = goFlashUntilPerf != null && nowPerf < goFlashUntilPerf;
   const showLastLapCue = lastLapCueUntilPerf != null && nowPerf < lastLapCueUntilPerf;
 
-  const instruction =
+  const instruction = cfg.mode === "free" ? "Run through the beam to count laps." : null;
+  const targetLabel =
     cfg.mode === "free"
-      ? "Run through the beam to count laps."
+      ? null
       : cfg.mode === "first_to_n"
         ? `Target: ${cfg.target} laps`
         : cfg.mode === "time_trial"
@@ -420,18 +413,18 @@ function RacePageContent() {
           : "Align";
 
   const gatePillClass = !serial.connected
-    ? "border-zinc-800 bg-zinc-950 text-zinc-400"
+    ? "border-zinc-800/60 bg-zinc-950/40 text-zinc-500"
     : !statusFresh
-      ? "border-zinc-700 bg-zinc-950 text-zinc-300"
+      ? "border-zinc-800/60 bg-zinc-950/50 text-zinc-400"
       : state.phase === "running" && beamStatus === 0
-        ? "border-rose-500/40 bg-rose-500/10 text-rose-200"
+        ? "border-rose-500/20 bg-rose-500/5 text-rose-200/80"
         : beamAligned
-          ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-200"
-          : "border-rose-500/40 bg-rose-500/10 text-rose-200";
+          ? "border-emerald-500/20 bg-emerald-500/5 text-emerald-200/80"
+          : "border-rose-500/20 bg-rose-500/5 text-rose-200/80";
 
   const timerPillClass = serial.connected
-    ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-200"
-    : "border-amber-500/40 bg-amber-500/10 text-amber-200";
+    ? "border-emerald-500/20 bg-emerald-500/5 text-emerald-200/80"
+    : "border-amber-500/20 bg-amber-500/5 text-amber-200/80";
 
   const gateReady = serial.connected && statusFresh && beamAligned;
   useEffect(() => {
@@ -551,21 +544,7 @@ function RacePageContent() {
     const session = await client.auth.getSession();
     const token = session.data.session?.access_token;
     if (!token) {
-      toast({
-        variant: "destructive",
-        title: "Sign in required",
-        description: "Log in to save your run to history.",
-        action: (
-          <ToastAction
-            altText="Open login page"
-            onClick={() => {
-              window.location.href = "/lapquest/login";
-            }}
-          >
-            Open login
-          </ToastAction>
-        ),
-      });
+      window.location.href = "/lapquest/login";
       return;
     }
 
@@ -648,12 +627,6 @@ function RacePageContent() {
   }, [saveRun, saveStatus, state]);
 
   useEffect(() => {
-    ensureHeaderHidden();
-    const rafId = requestAnimationFrame(ensureHeaderHidden);
-    return () => cancelAnimationFrame(rafId);
-  }, [ensureHeaderHidden, state.phase]);
-
-  useEffect(() => {
     const client = supabase;
     if (!isSupabaseConfigured || !client) return;
 
@@ -699,37 +672,31 @@ function RacePageContent() {
       {showLastLapCue && (
         <div className="pointer-events-none fixed inset-0 z-40 last-lap-flash" />
       )}
-      <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 py-6">
-        <header className="flex flex-col items-center justify-between gap-3 md:flex-row md:items-end">
-          <div className="text-center md:text-left">
-            <Link href="/lapquest" className="text-4xl font-black tracking-tight text-white md:text-5xl">
-              LapQuest
-            </Link>
+      <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 pt-2 pb-6">
+        <header className="flex flex-col items-center justify-between gap-3 md:flex-row md:items-center">
+          <div className="text-[0.7rem] font-semibold uppercase tracking-[0.3em] text-zinc-500">
+            {targetLabel}
           </div>
-
           <div className="flex flex-wrap items-center justify-center gap-2 md:justify-end">
-            <div className={`rounded-full border px-3 py-1 text-sm ${timerPillClass}`}>
-              Counter: {serial.connected ? "Ready" : "Not ready"}
+            <div className={`rounded-full border px-3 py-1 text-xs ${timerPillClass}`}>
+              Tracker: {serial.connected ? "Ready" : "Not ready"}
             </div>
-            <div className={`rounded-full border px-3 py-1 text-sm ${gatePillClass}`}>Beam: {gateLabel}</div>
+            <div className={`rounded-full border px-3 py-1 text-xs ${gatePillClass}`}>Gate: {gateLabel}</div>
           </div>
         </header>
 
         {state.phase === "running" && goalPct != null && cfg.target != null && (
-          <div className="mt-6 w-full">
-            <div className="mb-2 flex items-center justify-between text-sm text-zinc-400">
-              <span>Goal</span>
-              <span>
-                {laps} / {cfg.target}
-              </span>
+          <div className="mt-2 flex w-full items-center gap-1 text-xs text-zinc-400">
+            <div className="min-w-[48px] text-left">
+              {laps} / {cfg.target}
             </div>
-            <div className="h-5 w-full rounded-full bg-zinc-800">
-              <div className="h-5 rounded-full bg-white/80" style={{ width: `${goalPct}%` }} />
+            <div className="h-4 flex-1 rounded-full bg-zinc-800">
+              <div className="h-4 rounded-full bg-white/80" style={{ width: `${goalPct}%` }} />
             </div>
           </div>
         )}
 
-        {state.phase === "idle" && (
+        {state.phase === "idle" && instruction && (
           <div className="mt-4 text-center text-zinc-300">
             <div className="text-sm font-medium uppercase tracking-[0.2em] text-zinc-500">
               {instruction}
@@ -737,11 +704,11 @@ function RacePageContent() {
           </div>
         )}
 
-        <div className="mt-10 flex flex-1 flex-col items-center justify-center gap-6 text-center">
+        <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center">
           {state.phase === "running" ? (
             <div className="flex w-full flex-col items-center gap-8">
               {cfg.mode === "time_trial" || cfg.mode === "free" || cfg.mode === "distance" ? (
-                <div className="grid w-full max-w-5xl items-center gap-8 text-center md:grid-cols-2">
+                <div className="grid w-full max-w-6xl items-center gap-12 text-center md:grid-cols-2 md:gap-24 lg:gap-32">
                   <div className="flex flex-col items-center gap-2">
                     <div className="text-xs uppercase tracking-[0.4em] text-zinc-500">
                       {cfg.mode === "time_trial"
@@ -900,14 +867,14 @@ function RacePageContent() {
                   variant="outline"
                   className="h-16 flex-1 border-zinc-700 text-lg font-semibold text-zinc-200 hover:bg-zinc-900"
                 >
-                  <Link href="/lapquest">New run</Link>
+                  <Link href="/lapquest/setup">New run</Link>
                 </Button>
                 <Button
                   asChild
                   variant="outline"
                   className="h-16 flex-1 border-zinc-700 text-lg font-semibold text-zinc-200 hover:bg-zinc-900"
                 >
-                  <Link href="/lapquest/history">History</Link>
+                  <Link href="/lapquest/history">My runs</Link>
                 </Button>
               </div>
             )}

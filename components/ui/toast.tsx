@@ -25,12 +25,12 @@ const ToastViewport = React.forwardRef<
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName
 
 const toastVariants = cva(
-  "group pointer-events-auto relative flex w-full items-center justify-between gap-3 overflow-hidden rounded-lg border p-4 pr-10 shadow-lg transition-all data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-80 data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full data-[state=closed]:slide-out-to-right-full",
+  "group pointer-events-auto relative flex w-full items-center justify-between gap-3 overflow-hidden rounded-xl border p-4 pr-10 shadow-[0_20px_50px_rgba(0,0,0,0.35)] transition-all data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-80 data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full data-[state=closed]:slide-out-to-right-full",
   {
     variants: {
       variant: {
         default:
-          "border-slate-200 bg-white text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-50",
+          "border-zinc-800/80 bg-zinc-950/90 text-zinc-100 backdrop-blur",
         destructive:
           "border-red-500/60 bg-red-600 text-white dark:border-red-500/60 dark:bg-red-900 dark:text-red-50",
       },
@@ -61,7 +61,7 @@ const ToastAction = React.forwardRef<
   <ToastPrimitives.Action
     ref={ref}
     className={cn(
-      "inline-flex h-8 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-900 transition-colors hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-white disabled:pointer-events-none disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800 dark:focus:ring-slate-500 dark:focus:ring-offset-slate-950 group-[.destructive]:border-red-100/30 group-[.destructive]:bg-red-500/10 group-[.destructive]:text-red-50 group-[.destructive]:hover:bg-red-500/20 group-[.destructive]:focus:ring-red-200 group-[.destructive]:focus:ring-offset-red-600",
+      "inline-flex h-8 shrink-0 items-center justify-center rounded-md border border-zinc-700/70 bg-zinc-900 px-3 text-sm font-medium text-zinc-100 transition-colors hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:ring-offset-2 focus:ring-offset-zinc-950 disabled:pointer-events-none disabled:opacity-50 group-[.destructive]:border-red-100/30 group-[.destructive]:bg-red-500/10 group-[.destructive]:text-red-50 group-[.destructive]:hover:bg-red-500/20 group-[.destructive]:focus:ring-red-200 group-[.destructive]:focus:ring-offset-red-600",
       className
     )}
     {...props}
@@ -76,7 +76,7 @@ const ToastClose = React.forwardRef<
   <ToastPrimitives.Close
     ref={ref}
     className={cn(
-      "absolute right-2 top-2 rounded-md p-1 text-slate-500 opacity-0 transition-opacity hover:text-slate-900 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 group-hover:opacity-100 dark:text-slate-400 dark:hover:text-slate-50 dark:focus:ring-slate-500 dark:focus:ring-offset-slate-950 group-[.destructive]:text-red-100/70 group-[.destructive]:hover:text-red-50 group-[.destructive]:focus:ring-red-200 group-[.destructive]:focus:ring-offset-red-600",
+      "absolute right-2 top-2 rounded-md p-1 text-zinc-400 opacity-0 transition-opacity hover:text-zinc-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:ring-offset-2 focus:ring-offset-zinc-950 group-hover:opacity-100 group-[.destructive]:text-red-100/70 group-[.destructive]:hover:text-red-50 group-[.destructive]:focus:ring-red-200 group-[.destructive]:focus:ring-offset-red-600",
       className
     )}
     toast-close=""
@@ -106,7 +106,7 @@ const ToastDescription = React.forwardRef<
   <ToastPrimitives.Description
     ref={ref}
     className={cn(
-      "text-sm text-slate-600 dark:text-slate-300 group-[.destructive]:text-red-100/80",
+      "text-sm text-zinc-400 group-[.destructive]:text-red-100/80",
       className
     )}
     {...props}

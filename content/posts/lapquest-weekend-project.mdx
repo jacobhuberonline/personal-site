@@ -1,0 +1,144 @@
+---
+title: "LapQuest: Learning Hardware Through a Real Problem"
+slug: "lapquest-learning-hardware-through-a-real-problem"
+date: "2025-12-29"
+summary: "I wanted to learn hardware—wires, sensors, buttons, and a Raspberry Pi Pico—so I built LapQuest after my nephew ran endless laps through my house and we wanted real stats."
+tags: ["hardware", "raspberry-pi-pico", "micropython", "nextjs", "side-project"]
+published: true
+image: "/images/blog/lapquest-learning-hardware-through-a-real-problem/header.png"
+---
+
+## Introduction
+
+I’ve wanted to get into **hardware** for a while. Not just reading about it, but actually wiring things up: sensors, buttons, microcontrollers, and making the physical world talk to software.
+
+The problem was motivation. I learn best when there’s a real use case—something tangible where the result feels immediately useful.
+
+That use case showed up in my house.
+
+My nephew was running circles inside for what felt like forever. After a while, we started wondering the obvious questions:
+
+- How many laps has he done?
+- What’s his fastest lap?
+- How long can he keep that pace?
+- What’s the “race summary” of this chaos?
+
+So I built **LapQuest**: a kid-friendly lap timer that turns a hallway (or driveway) into a track and gives you real stats.
+
+## The idea: turn a hallway into a racetrack
+
+The simplest version of the project was one goal:
+
+**Count a lap when someone crosses a finish line.**
+
+To do that in the physical world, I needed two things:
+
+1. A way to detect a runner crossing a point (a “finish line”)
+2. A clean way to start a run (without relying on someone tapping a screen)
+
+I ended up with:
+
+- A **break-beam sensor** as the finish line
+- A **physical button** to start the race
+- A **Raspberry Pi Pico** to read inputs and send events to the web app
+
+Once I had that, the rest became a game loop: start → countdown → run → stats → try again.
+
+## What the hardware does
+
+### Break-beam sensor = finish line
+
+The sensor has two parts: an emitter and a receiver. When the beam is intact, it reads one way. When a runner breaks the beam, it flips.
+
+In code terms, it becomes: **beam broken → lap event**.
+
+### Button = “real race” start
+
+Starting from a physical button changed the feel immediately. It’s more intuitive for kids (and honestly more satisfying for adults too).
+
+The flow became:
+
+1. Stand behind the finish line
+2. Press the button
+3. Watch: **3… 2… 1… GO!**
+4. Then start running
+
+No menus. No “press start then run through the beam.” Just race.
+
+## Where I learned the most
+
+### Hardware inputs are messy
+
+I expected the beam sensor to behave like a perfect boolean.
+
+It doesn’t.
+
+Real signals can flicker. Alignment can be slightly off. A fast runner can cause brief interruptions. Sometimes you get noise that looks like a lap.
+
+That forced me to add basic reliability rules:
+
+- Debouncing / ignoring tiny blips
+- Treating “sensor aligned” as its own state (not the same thing as “someone is crossing”)
+- Avoiding UI messages that accuse the runner of doing something wrong when it’s actually a setup issue
+
+### The UX matters more than the circuit
+
+The first versions of LapQuest were too wordy and too technical.
+
+Kids don’t care about setup details. They want:
+
+- a big countdown
+- big lap numbers
+- instant feedback
+
+That pushed the UI toward “race mode” simplicity: show only what matters, when it matters.
+
+## The software side: making it fun
+
+Once lap events are flowing into the app, you can start building the “game”:
+
+- Track lap count
+- Track total time
+- Compute fastest lap
+- Save the run to look back later
+
+I also added multiple race modes so it stays interesting:
+
+- **Free run** (just count)
+- **First to N laps**
+- **Time trial**
+- **Distance goal** (meters/miles → estimate laps)
+
+The core idea stayed the same: keep it simple enough to start quickly, but rich enough that kids want to do “one more race.”
+
+## The moment it felt real
+
+The best moment wasn’t wiring the Pico or getting the first signal read.
+
+It was when my nephew crossed the beam and the screen instantly reacted—lap counted, time recorded—without anyone touching the laptop.
+
+That’s when it stopped feeling like a “hardware experiment” and started feeling like a real thing.
+
+## What’s next
+
+A few improvements are on my list:
+
+- Faster, more portable sensor mounting (so setup is consistent)
+- A clearer “ready/aligned” indicator before a race starts
+- More sound effects (countdown + finish + “final lap” style cues)
+- Profiles / leaderboards so kids can compete across runs
+
+## Conclusion
+
+LapQuest is basically my ideal way to learn:
+
+- pick a real-world problem
+- build the simplest version that works
+- improve it based on actual use
+- keep the result fun enough that people want to use it again
+
+I wanted an excuse to learn wires, sensors, buttons, and microcontrollers.
+
+My nephew running endless circles gave me one.
+
+And now we don’t have to guess the stats—we can measure them.
