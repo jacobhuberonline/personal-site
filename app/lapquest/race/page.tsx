@@ -111,7 +111,7 @@ function RacePageContent() {
       target: mode === "free" ? undefined : mode === "distance" ? distanceTargetLaps ?? undefined : target,
       countdownSec: 3,
       lapLockoutMs: 2000,
-      startBeamDelayMs: 1200,
+      startBeamDelayMs: 5000,
     }),
     [distanceTargetLaps, mode, target]
   );
