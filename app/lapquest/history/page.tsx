@@ -194,12 +194,13 @@ export default function HistoryPage() {
     const client = supabase;
     setLapsLoading(true);
     setLapsError(null);
-    client
-      .from("laps")
-      .select("n, elapsed_ms, lap_time_ms")
-      .eq("run_id", runId)
-      .order("n", { ascending: true })
-      .then((result) => {
+    const loadLaps = async () => {
+      try {
+        const result = await client
+          .from("laps")
+          .select("n, elapsed_ms, lap_time_ms")
+          .eq("run_id", runId)
+          .order("n", { ascending: true });
         if (!isActive) return;
         if (result.error) {
           setLapsError(result.error.message);
@@ -209,16 +210,17 @@ export default function HistoryPage() {
           ...prev,
           [runId]: (result.data as LapRow[]) ?? [],
         }));
-      })
-      .catch((error) => {
+      } catch (error) {
         if (!isActive) return;
         const message = error instanceof Error ? error.message : "Failed to load laps.";
         setLapsError(message);
-      })
-      .finally(() => {
+      } finally {
         if (!isActive) return;
         setLapsLoading(false);
-      });
+      }
+    };
+
+    void loadLaps();
 
     return () => {
       isActive = false;
