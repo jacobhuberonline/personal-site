@@ -2,7 +2,7 @@
 title: "LapQuest: Learning Hardware Through a Real Problem"
 slug: "lapquest-learning-hardware-through-a-real-problem"
 date: "2025-12-29"
-summary: "I wanted to learn hardware—wires, sensors, buttons, and a Raspberry Pi Pico—so I built LapQuest after my nephew ran endless laps through my house and we wanted real stats."
+summary: "I wanted to learn hardware (wires, sensors, buttons, and a Raspberry Pi Pico) so I built LapQuest after my nephew ran endless laps through my house and we wanted real stats."
 tags: ["hardware", "raspberry-pi-pico", "micropython", "nextjs", "side-project"]
 published: true
 image: "/images/blog/lapquest-learning-hardware-through-a-real-problem/header.png"
@@ -12,7 +12,7 @@ image: "/images/blog/lapquest-learning-hardware-through-a-real-problem/header.pn
 
 I’ve wanted to get into **hardware** for a while. Not just reading about it, but actually wiring things up: sensors, buttons, microcontrollers, and making the physical world talk to software.
 
-The problem was motivation. I learn best when there’s a real use case—something tangible where the result feels immediately useful.
+The problem was motivation. I learn best when there’s a real use case, something tangible, where the result feels immediately useful.
 
 That use case showed up in my house.
 
@@ -23,7 +23,7 @@ My nephew was running circles inside for what felt like forever. After a while, 
 - How long can he keep that pace?
 - What’s the “race summary” of this chaos?
 
-So I built **LapQuest**: a kid-friendly lap timer that turns a hallway (or driveway) into a track and gives you real stats.
+So I built **LapQuest**: a kid-friendly lap timer that turns a hallway (or driveway...or anywhere really) into a track and gives you real stats.
 
 ## The idea: turn a hallway into a racetrack
 
@@ -39,7 +39,7 @@ To do that in the physical world, I needed two things:
 I ended up with:
 
 - A **break-beam sensor** as the finish line
-- A **physical button** to start the race
+- A **big, light-up button** to start the race
 - A **Raspberry Pi Pico** to read inputs and send events to the web app
 
 Once I had that, the rest became a game loop: start → countdown → run → stats → try again.
@@ -54,12 +54,12 @@ In code terms, it becomes: **beam broken → lap event**.
 
 ### Button = “real race” start
 
-Starting from a physical button changed the feel immediately. It’s more intuitive for kids (and honestly more satisfying for adults too).
+Starting from a big button that lights up changed the feel immediately. It’s more intuitive for kids (and honestly more satisfying for adults too).
 
 The flow became:
 
 1. Stand behind the finish line
-2. Press the button
+2. Press the big, light-up button
 3. Watch: **3… 2… 1… GO!**
 4. Then start running
 
@@ -79,7 +79,6 @@ That forced me to add basic reliability rules:
 
 - Debouncing / ignoring tiny blips
 - Treating “sensor aligned” as its own state (not the same thing as “someone is crossing”)
-- Avoiding UI messages that accuse the runner of doing something wrong when it’s actually a setup issue
 
 ### The UX matters more than the circuit
 
@@ -115,7 +114,7 @@ The core idea stayed the same: keep it simple enough to start quickly, but rich 
 
 The best moment wasn’t wiring the Pico or getting the first signal read.
 
-It was when my nephew crossed the beam and the screen instantly reacted—lap counted, time recorded—without anyone touching the laptop.
+It was when my nephew crossed the beam and the screen instantly reacted, lap counted, time recorded, without anyone touching the laptop.
 
 That’s when it stopped feeling like a “hardware experiment” and started feeling like a real thing.
 
@@ -123,10 +122,12 @@ That’s when it stopped feeling like a “hardware experiment” and started fe
 
 A few improvements are on my list:
 
-- Faster, more portable sensor mounting (so setup is consistent)
-- A clearer “ready/aligned” indicator before a race starts
-- More sound effects (countdown + finish + “final lap” style cues)
-- Profiles / leaderboards so kids can compete across runs
+- Better **hardware presentation**: a clean enclosure, consistent mounts/stands, and real cable management so it looks like a “product” instead of a science fair table
+- Make parts of setup **wireless**: reduce dangling cords by moving the start button (and possibly the gate sensor) to a battery-powered wireless connection
+- A clearer “ready/aligned” indicator so you know the gate is stable before starting
+- More **game feel**: better countdown/finish sounds, “final lap” cues, and optional background tracks
+- Richer **course info**: add notes/photos/tips, lap distance, and ideas so other people can copy a setup in their own space
+- A **social layer**: public (opt-in) leaderboards, shared runs, and a way to compare stats with friends/family
 
 ## Conclusion
 
@@ -141,4 +142,4 @@ I wanted an excuse to learn wires, sensors, buttons, and microcontrollers.
 
 My nephew running endless circles gave me one.
 
-And now we don’t have to guess the stats—we can measure them.
+And now we don’t have to guess the stats, we can measure them.
