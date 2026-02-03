@@ -7,7 +7,7 @@ import { LapquestLoginRedirect } from "@/components/lapquest/login-redirect";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://jacobhuber.vercel.app"),
+  metadataBase: new URL("https://jhuber.vercel.app"),
   title: {
     default: "Jacob Huber · Software Engineer",
     template: "%s · Jacob Huber",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     title: "Jacob Huber · Software Engineer",
     description:
       "Software engineer focused on healthcare data integrations, API-driven automation, and modern web tooling.",
-    url: "https://jacobhuber.vercel.app",
+    url: "https://jhuber.vercel.app",
     siteName: "Jacob Huber",
     type: "website",
     images: [
