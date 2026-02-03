@@ -50,83 +50,114 @@ type Stage = {
   rows?: ScheduleRow[];
 };
 
-type FoodsIntroducedTemplateRow = {
+type FoodsIntroducedEvent = {
   id: string;
   activity: string;
   start: string;
-  end?: string;
+  kind: "milk" | "food" | "nap" | "other";
+  durationMinutes?: number;
+  playAfter?: boolean;
 };
 
-const foodsIntroducedTemplate: FoodsIntroducedTemplateRow[] = [
+const MILK_DURATION_MINUTES = 30;
+const FOOD_DURATION_MINUTES = 15;
+const MORNING_NAP_DURATION_MINUTES = 90;
+const MIDDAY_NAP_DURATION_MINUTES = 90;
+const CATNAP_DURATION_MINUTES = 30;
+const PLAY_ACTIVITY = "Awake / Play";
+
+const foodsIntroducedTemplate: FoodsIntroducedEvent[] = [
   {
     id: "wake",
     activity: "Wakes up; drinks formula/breast milk.",
     start: "07:00",
+    kind: "milk",
+    playAfter: true,
   },
   {
     id: "breakfast-solids",
     activity: "1/2 jar fruit, 1-2 tablespoons of baby cereal. May begin to give sippy cup.",
     start: "08:00",
+    kind: "food",
+    playAfter: true,
   },
   {
     id: "morning-nap",
     activity: "Naptime (1-1 1/2 hours).",
     start: "09:00",
+    kind: "nap",
+    durationMinutes: MORNING_NAP_DURATION_MINUTES,
   },
   {
     id: "late-morning-milk",
     activity: "Formula/breast milk.",
     start: "11:00",
+    kind: "milk",
+    playAfter: true,
   },
   {
     id: "lunch-solids",
     activity:
       "2-4 oz. veggies, 2-4 oz. fruit, 1-2 tablespoons of baby cereal. May include a sippy cup here.",
     start: "12:00",
+    kind: "food",
+    playAfter: true,
   },
   {
     id: "midday-nap",
     activity:
       "Nap. Pick one time between 12:30 and 1:30 and start nap at that time each day (ideally 1 1/2-2 hours).",
     start: "12:30",
-    end: "13:30",
+    kind: "nap",
+    durationMinutes: MIDDAY_NAP_DURATION_MINUTES,
   },
   {
     id: "afternoon-milk",
     activity: "Formula/breast milk.",
     start: "15:00",
+    kind: "milk",
+    playAfter: true,
   },
   {
     id: "afternoon-solids",
     activity:
       "2-4 oz. veggies, 2-4 oz. fruit with a sippy cup of formula/breast milk.",
     start: "16:00",
+    kind: "food",
+    playAfter: true,
   },
   {
     id: "catnap",
     activity: "May take a catnap.",
     start: "17:00",
+    kind: "nap",
+    durationMinutes: CATNAP_DURATION_MINUTES,
   },
   {
     id: "evening-awake",
     activity:
       "Keep awake from now until bath time. (Do 10 minutes of tummy time-release that energy!)",
     start: "18:00",
+    kind: "other",
   },
   {
     id: "bath-time",
-    activity: "Begin bath time routine (see \"Bathing\" section).",
+    activity: "Begin bath time routine.",
     start: "18:30",
+    kind: "other",
   },
   {
     id: "bedtime-feed",
     activity: "Begin \"Bedtime Feeding\".",
     start: "19:00",
+    kind: "milk",
+    playAfter: false,
   },
   {
     id: "crib",
     activity: "In the crib for the night.",
     start: "19:30",
+    kind: "other",
   },
 ];
 
@@ -137,25 +168,71 @@ const timeStringToDate = (value: string, baseDate: Date) => {
   return date;
 };
 
-const buildFoodsIntroducedRows = (baseDate: Date): ScheduleRow[] =>
-  foodsIntroducedTemplate.map((row, index) => {
-    const start = timeStringToDate(row.start, baseDate);
-    const nextRow = foodsIntroducedTemplate[index + 1];
-    const end = row.end
-      ? timeStringToDate(row.end, baseDate)
-      : nextRow
-        ? timeStringToDate(nextRow.start, baseDate)
-        : null;
+const addMinutes = (date: Date, minutes: number) =>
+  new Date(date.getTime() + minutes * 60 * 1000);
 
-    return {
-      id: row.id,
-      activity: row.activity,
+const buildFoodsIntroducedRows = (baseDate: Date): ScheduleRow[] => {
+  const rows: ScheduleRow[] = [];
+
+  foodsIntroducedTemplate.forEach((event, index) => {
+    const start = timeStringToDate(event.start, baseDate);
+    const nextEvent = foodsIntroducedTemplate[index + 1];
+    const nextStart = nextEvent ? timeStringToDate(nextEvent.start, baseDate) : null;
+
+    if (event.kind === "milk" || event.kind === "food") {
+      const duration =
+        event.kind === "milk" ? MILK_DURATION_MINUTES : FOOD_DURATION_MINUTES;
+      const feedEnd = addMinutes(start, duration);
+
+      rows.push({
+        id: event.id,
+        activity: event.activity,
+        startLabel: formatDateToTimeString(start),
+        endLabel: formatDateToTimeString(feedEnd),
+        start,
+        end: feedEnd,
+      });
+
+      if (event.playAfter !== false && nextStart && feedEnd < nextStart) {
+        rows.push({
+          id: `${event.id}-play`,
+          activity: PLAY_ACTIVITY,
+          startLabel: formatDateToTimeString(feedEnd),
+          endLabel: formatDateToTimeString(nextStart),
+          start: feedEnd,
+          end: nextStart,
+        });
+      }
+      return;
+    }
+
+    const eventEnd = event.durationMinutes
+      ? addMinutes(start, event.durationMinutes)
+      : nextStart;
+
+    rows.push({
+      id: event.id,
+      activity: event.activity,
       startLabel: formatDateToTimeString(start),
-      endLabel: end ? formatDateToTimeString(end) : "—",
+      endLabel: eventEnd ? formatDateToTimeString(eventEnd) : "—",
       start,
-      end,
-    };
+      end: eventEnd,
+    });
+
+    if (event.kind === "nap" && eventEnd && nextStart && eventEnd < nextStart) {
+      rows.push({
+        id: `${event.id}-play`,
+        activity: PLAY_ACTIVITY,
+        startLabel: formatDateToTimeString(eventEnd),
+        endLabel: formatDateToTimeString(nextStart),
+        start: eventEnd,
+        end: nextStart,
+      });
+    }
   });
+
+  return rows;
+};
 
 const findActiveRow = (rows: ScheduleRow[], now: Date) => {
   for (const row of rows) {
