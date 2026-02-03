@@ -65,6 +65,7 @@ const MORNING_NAP_DURATION_MINUTES = 90;
 const MIDDAY_NAP_DURATION_MINUTES = 90;
 const CATNAP_DURATION_MINUTES = 30;
 const PLAY_ACTIVITY = "Awake / Play";
+const STORAGE_STAGE_KEY = "francis_schedule_stage";
 
 const foodsIntroducedTemplate: FoodsIntroducedEvent[] = [
   {
@@ -287,6 +288,19 @@ export default function ScheduleClient() {
 
   const [stageId, setStageId] = useState<Stage["id"]>("pre-solids");
   const stage = stages.find((s) => s.id === stageId) ?? stages[0];
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const saved = window.localStorage.getItem(STORAGE_STAGE_KEY);
+    if (saved && stages.some((option) => option.id === saved)) {
+      setStageId(saved as Stage["id"]);
+    }
+  }, [stages]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(STORAGE_STAGE_KEY, stageId);
+  }, [stageId]);
 
   const generatedBlocks = useMemo(() => {
     if (!stage.config) return [];
