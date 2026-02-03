@@ -341,9 +341,9 @@ export default function ScheduleClient() {
           Francis&apos;s Plan for Today
         </h1>
         <p className="max-w-3xl text-sm text-neutral-700 dark:text-neutral-300">
-          {stage.config
-            ? "The highlighted row is what's happening now, and the next row shows what's coming up. Times are guides—shift a little earlier or later based on how he's feeling."
-            : "Here's the typical routine for this stage. Times and food amounts are guides—shift a little earlier or later based on how he's feeling."}
+          Choose a schedule below. The highlighted row shows what's happening now, and the next row
+          shows what's coming up. Times and food amounts are guides—shift a little earlier or later
+          based on how he's feeling.
         </p>
       </div>
 
