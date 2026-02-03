@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/lapquest/hero.png",
+        url: "/lapquest/hero-two.png",
         width: 1536,
         height: 1024,
         alt: "LapQuest running game hero image",
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     title: "LapQuest",
     description:
       "Turn any space into a mini race track with live lap counting, countdowns, and saved runs.",
-    images: ["/lapquest/hero.png"],
+    images: ["/lapquest/hero-two.png"],
   },
 };
 

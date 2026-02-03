@@ -35,7 +35,7 @@ export default function LapQuestLanding() {
         <section
           className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white/85 px-6 py-12 dark:border-zinc-900 dark:bg-black/80 sm:px-10 sm:py-16"
           style={{
-            backgroundImage: "url('/lapquest/hero.png')",
+            backgroundImage: "url('/lapquest/hero-two.png')",
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
