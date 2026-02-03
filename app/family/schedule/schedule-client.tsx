@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Baby, Clock9 } from "lucide-react";
+import { Clock9 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -334,13 +334,9 @@ export default function ScheduleClient() {
   const activeRowId = useMemo(() => findActiveRow(scheduleRows, now), [scheduleRows, now]);
 
   return (
-    <main className="mx-auto max-w-5xl space-y-8 px-4 py-10 sm:px-6">
+    <main className="mx-auto max-w-5xl space-y-8">
       {/* Header */}
       <div className="space-y-3">
-        <div className="inline-flex items-center gap-2 rounded-full bg-neutral-100 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200">
-          <Baby className="h-4 w-4" aria-hidden="true" />
-          Francis
-        </div>
         <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-50">
           Francis&apos;s Plan for Today
         </h1>
@@ -352,7 +348,11 @@ export default function ScheduleClient() {
       </div>
 
       {/* Stage selector */}
-      <div className="flex flex-wrap gap-2">
+      <div className="space-y-2">
+        <div className="text-xs font-semibold uppercase tracking-[0.24em] text-neutral-500 dark:text-neutral-400">
+          Choose Schedule
+        </div>
+        <div className="flex flex-wrap gap-2">
         {stages.map((option) => {
           const isActive = option.id === stageId;
           const isDisabled = !option.config && !option.rows;
@@ -365,9 +365,9 @@ export default function ScheduleClient() {
               disabled={isDisabled}
               onClick={() => setStageId(option.id)}
               className={cn(
-                "rounded-full border px-4",
+                "rounded-full border px-4 py-2 text-sm font-semibold",
                 isActive
-                  ? "border-neutral-900 bg-neutral-900 text-white shadow-sm hover:bg-neutral-800 dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
+                  ? "border-primary bg-primary text-primary-foreground shadow-md shadow-primary/20 ring-2 ring-primary/40 ring-offset-2 ring-offset-background hover:bg-primary/90 dark:ring-primary/50"
                   : "border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900/60 dark:text-neutral-200 dark:hover:bg-neutral-800",
                 isDisabled && "cursor-not-allowed opacity-60 hover:bg-transparent"
               )}
@@ -376,6 +376,7 @@ export default function ScheduleClient() {
             </Button>
           );
         })}
+        </div>
       </div>
 
       {/* Plan card */}
@@ -386,6 +387,9 @@ export default function ScheduleClient() {
           </CardTitle>
           <p className="text-sm text-neutral-700 dark:text-neutral-300">
             {stage.description}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Currently viewing: <span className="font-semibold text-foreground">{stage.label}</span>
           </p>
         </CardHeader>
         <CardContent>
