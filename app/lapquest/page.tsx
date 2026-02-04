@@ -177,6 +177,15 @@ export default function LapQuestLanding() {
             <p className="mt-3 text-sm text-slate-600 dark:text-zinc-400">
               LapQuest works best with a beam gate sensor and a Pico-powered finish line. Set it up once and keep the races coming.
             </p>
+            <div className="mt-5">
+              <Link
+                href="/blog/lapquest-learning-hardware-through-a-real-problem"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-slate-900 hover:text-slate-700 dark:text-white dark:hover:text-zinc-300"
+              >
+                Read the full build story
+                <span aria-hidden="true">→</span>
+              </Link>
+            </div>
           </div>
           <div className="grid gap-3 text-sm text-slate-700 dark:text-zinc-300">
             <div className="rounded-xl border border-slate-200/70 bg-white/70 px-4 py-3 dark:border-zinc-800/80 dark:bg-black/40">
