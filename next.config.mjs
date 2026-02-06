@@ -6,6 +6,15 @@ const nextConfig = {
   experimental: {
     mdxRs: true,
   },
+  async redirects() {
+    return [
+      {
+        source: "/family/schedule",
+        destination: "/family/baby",
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default withMDX({

@@ -65,79 +65,75 @@ const MORNING_NAP_DURATION_MINUTES = 90;
 const MIDDAY_NAP_DURATION_MINUTES = 90;
 const CATNAP_DURATION_MINUTES = 30;
 const PLAY_ACTIVITY = "Awake / Play";
-const STORAGE_STAGE_KEY = "francis_schedule_stage";
+const STORAGE_STAGE_KEY = "baby_schedule_stage";
 
 const foodsIntroducedTemplate: FoodsIntroducedEvent[] = [
   {
     id: "wake",
-    activity: "Wakes up; drinks formula/breast milk.",
+    activity: "Wake + milk feeding.",
     start: "07:00",
     kind: "milk",
     playAfter: true,
   },
   {
     id: "breakfast-solids",
-    activity: "1/2 jar fruit, 1-2 tablespoons of baby cereal. May begin to give sippy cup.",
+    activity: "Solids + small cereal serving.",
     start: "08:00",
     kind: "food",
     playAfter: true,
   },
   {
     id: "morning-nap",
-    activity: "Naptime (1-1 1/2 hours).",
+    activity: "Morning nap.",
     start: "09:00",
     kind: "nap",
     durationMinutes: MORNING_NAP_DURATION_MINUTES,
   },
   {
     id: "late-morning-milk",
-    activity: "Formula/breast milk.",
+    activity: "Milk feeding.",
     start: "11:00",
     kind: "milk",
     playAfter: true,
   },
   {
     id: "lunch-solids",
-    activity:
-      "2-4 oz. veggies, 2-4 oz. fruit, 1-2 tablespoons of baby cereal. May include a sippy cup here.",
+    activity: "Solids + milk (as needed).",
     start: "12:00",
     kind: "food",
     playAfter: true,
   },
   {
     id: "midday-nap",
-    activity:
-      "Nap. Pick one time between 12:30 and 1:30 and start nap at that time each day (ideally 1 1/2-2 hours).",
+    activity: "Midday nap.",
     start: "12:30",
     kind: "nap",
     durationMinutes: MIDDAY_NAP_DURATION_MINUTES,
   },
   {
     id: "afternoon-milk",
-    activity: "Formula/breast milk.",
+    activity: "Milk feeding.",
     start: "15:00",
     kind: "milk",
     playAfter: true,
   },
   {
     id: "afternoon-solids",
-    activity:
-      "2-4 oz. veggies, 2-4 oz. fruit with a sippy cup of formula/breast milk.",
+    activity: "Afternoon solids.",
     start: "16:00",
     kind: "food",
     playAfter: true,
   },
   {
     id: "catnap",
-    activity: "May take a catnap.",
+    activity: "Catnap if needed.",
     start: "17:00",
     kind: "nap",
     durationMinutes: CATNAP_DURATION_MINUTES,
   },
   {
     id: "evening-awake",
-    activity:
-      "Keep awake from now until bath time. (Do 10 minutes of tummy time-release that energy!)",
+    activity: "Awake + playtime.",
     start: "18:00",
     kind: "other",
   },
@@ -338,12 +334,12 @@ export default function ScheduleClient() {
       {/* Header */}
       <div className="space-y-3">
         <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-50">
-          Francis&apos;s Plan for Today
+          Baby Schedule for Today
         </h1>
         <p className="max-w-3xl text-sm text-neutral-700 dark:text-neutral-300">
           Choose a schedule below. The highlighted row shows what's happening now, and the next row
           shows what's coming up. Times and food amounts are guides—shift a little earlier or later
-          based on how he's feeling.
+          based on how the baby is feeling.
         </p>
       </div>
 
@@ -415,7 +411,7 @@ export default function ScheduleClient() {
           {hasSchedule ? (
             <Table>
               <TableCaption>
-                Times are approximate. Staying close to this plan will help Francis stay rested,
+                Times are approximate. Staying close to this plan will help the baby stay rested,
                 fed, and happy.
               </TableCaption>
               <TableHeader>
@@ -454,9 +450,9 @@ export default function ScheduleClient() {
             <div className="mt-4 rounded-lg border border-dashed border-primary/40 bg-primary/5 p-4 text-sm text-muted-foreground">
               <p className="font-medium text-foreground">Night Routine</p>
               <p>
-                This is the wind-down before bed: give him a clean diaper, put on fresh pajamas if
-                needed, and choose a calming activity like a soothing book or quiet cuddles before
-                the final feeding.
+                This is the wind-down before bed: give the baby a clean diaper, put on fresh
+                pajamas if needed, and choose a calming activity like a soothing book or quiet
+                cuddles before the final feeding.
               </p>
             </div>
           )}

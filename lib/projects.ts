@@ -27,11 +27,11 @@ export const projects: Project[] = [
     tech: [".NET", "C#", "SQL"],
   },
   {
-    name: "Family Schedule (Francis)",
+    name: "Baby Schedule",
     description:
-      "Live, shareable daily schedule for Francis with feeding, wake-window, and nap blocks that adjust as he grows—built so caregivers can always see what’s happening now and what’s next.",
+      "Live, shareable daily schedule for the baby with feeding, wake-window, and nap blocks that adjust as they grow—built so caregivers can always see what’s happening now and what’s next.",
     tech: ["Next.js", "TypeScript", "Tailwind CSS"],
-    url: "/family/schedule",
+    url: "/family/baby",
   },
   {
     name: "Personal Site & Blog",
