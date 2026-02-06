@@ -3,7 +3,7 @@ import { Suspense } from "react";
 
 import ScheduleClient from "./schedule-client";
 
-const shareImage = "/images/francis-card.png";
+const shareImage = "/images/baby-schedule-og.png";
 
 export const metadata: Metadata = {
   title: "Baby Schedule",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
         url: shareImage,
         width: 1200,
         height: 630,
-        alt: "Baby daily schedule overview",
+        alt: "Baby schedule overview",
       },
     ],
   },
