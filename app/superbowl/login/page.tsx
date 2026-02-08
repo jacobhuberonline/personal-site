@@ -26,6 +26,7 @@ export default function SuperbowlLoginPage() {
       });
       return;
     }
+    const client = supabase;
     if (!email.trim()) {
       toast({
         variant: "destructive",
@@ -40,7 +41,7 @@ export default function SuperbowlLoginPage() {
       }
     }
     setSending(true);
-    const { error } = await supabase.auth.signInWithOtp({ email });
+    const { error } = await client.auth.signInWithOtp({ email });
     setSending(false);
     if (error) {
       toast({
@@ -59,6 +60,7 @@ export default function SuperbowlLoginPage() {
 
   async function verifyOtp() {
     if (!isSupabaseConfigured || !supabase) return;
+    const client = supabase;
     if (!otp.trim()) {
       toast({
         variant: "destructive",
@@ -68,7 +70,7 @@ export default function SuperbowlLoginPage() {
       return;
     }
     setVerifying(true);
-    const { error } = await supabase.auth.verifyOtp({
+    const { error } = await client.auth.verifyOtp({
       email,
       token: otp.trim(),
       type: "email",

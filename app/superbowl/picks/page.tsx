@@ -78,17 +78,18 @@ export default function SuperbowlPicksPage() {
       return;
     }
 
+    const client = supabase;
     let isActive = true;
 
     const loadSession = async () => {
-      const { data } = await supabase.auth.getSession();
+      const { data } = await client.auth.getSession();
       if (!isActive) return;
       setSession(data.session ?? null);
     };
 
     void loadSession();
 
-    const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data } = client.auth.onAuthStateChange((_event, nextSession) => {
       if (!isActive) return;
       setSession(nextSession ?? null);
     });
@@ -109,11 +110,12 @@ export default function SuperbowlPicksPage() {
       return;
     }
 
+    const client = supabase;
     let isActive = true;
 
     const loadData = async () => {
       setLoading(true);
-      const { data: events, error: eventError } = await supabase
+      const { data: events, error: eventError } = await client
         .from("superbowl_events")
         .select("id,name,starts_at,is_active")
         .eq("is_active", true)
@@ -139,7 +141,7 @@ export default function SuperbowlPicksPage() {
         return;
       }
 
-      const { data: questionRows, error: questionError } = await supabase
+      const { data: questionRows, error: questionError } = await client
         .from("superbowl_questions")
         .select("*")
         .eq("event_id", activeEvent.id)
@@ -158,7 +160,7 @@ export default function SuperbowlPicksPage() {
 
       setQuestions(questionRows ?? []);
 
-      const { data: entryData, error: entryError } = await supabase
+      const { data: entryData, error: entryError } = await client
         .from("superbowl_entries")
         .select("*")
         .eq("event_id", activeEvent.id)
@@ -180,7 +182,7 @@ export default function SuperbowlPicksPage() {
       setEntry(entryData ?? null);
 
       if (entryData) {
-        const { data: answerRows, error: answerError } = await supabase
+        const { data: answerRows, error: answerError } = await client
           .from("superbowl_answers")
           .select("question_id,value")
           .eq("entry_id", entryData.id);

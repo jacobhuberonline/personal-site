@@ -57,17 +57,18 @@ export default function SuperbowlAdminPage() {
       return;
     }
 
+    const client = supabase;
     let isActive = true;
 
     const loadSession = async () => {
-      const { data } = await supabase.auth.getSession();
+      const { data } = await client.auth.getSession();
       if (!isActive) return;
       setSession(data.session ?? null);
     };
 
     void loadSession();
 
-    const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data } = client.auth.onAuthStateChange((_event, nextSession) => {
       if (!isActive) return;
       setSession(nextSession ?? null);
     });
@@ -88,11 +89,12 @@ export default function SuperbowlAdminPage() {
       return;
     }
 
+    const client = supabase;
     let isActive = true;
 
     const loadData = async () => {
       setLoading(true);
-      const { data: adminRow, error: adminError } = await supabase
+      const { data: adminRow, error: adminError } = await client
         .from("site_admins")
         .select("user_id")
         .eq("user_id", session.user.id)
@@ -118,7 +120,7 @@ export default function SuperbowlAdminPage() {
 
       setIsAdmin(true);
 
-      const { data: events, error: eventError } = await supabase
+      const { data: events, error: eventError } = await client
         .from("superbowl_events")
         .select("id,name,starts_at,is_active")
         .eq("is_active", true)
@@ -144,7 +146,7 @@ export default function SuperbowlAdminPage() {
         return;
       }
 
-      const { data: questionRows, error: questionError } = await supabase
+      const { data: questionRows, error: questionError } = await client
         .from("superbowl_questions")
         .select("*")
         .eq("event_id", activeEvent.id)
@@ -163,7 +165,7 @@ export default function SuperbowlAdminPage() {
 
       setQuestions(questionRows ?? []);
 
-      const { data: resultRows, error: resultError } = await supabase
+      const { data: resultRows, error: resultError } = await client
         .from("superbowl_results")
         .select("question_id,value")
         .eq("event_id", activeEvent.id);

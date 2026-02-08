@@ -63,17 +63,18 @@ export default function SuperbowlLeaderboardPage() {
       return;
     }
 
+    const client = supabase;
     let isActive = true;
 
     const loadSession = async () => {
-      const { data } = await supabase.auth.getSession();
+      const { data } = await client.auth.getSession();
       if (!isActive) return;
       setSession(data.session ?? null);
     };
 
     void loadSession();
 
-    const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data } = client.auth.onAuthStateChange((_event, nextSession) => {
       if (!isActive) return;
       setSession(nextSession ?? null);
     });
@@ -94,11 +95,12 @@ export default function SuperbowlLeaderboardPage() {
       return;
     }
 
+    const client = supabase;
     let isActive = true;
 
     const loadData = async () => {
       setLoading(true);
-      const { data: events, error: eventError } = await supabase
+      const { data: events, error: eventError } = await client
         .from("superbowl_events")
         .select("id,name,starts_at,is_active")
         .eq("is_active", true)
@@ -127,7 +129,7 @@ export default function SuperbowlLeaderboardPage() {
       const kickoffPassed = Date.now() >= new Date(activeEvent.starts_at).getTime();
 
       if (!kickoffPassed) {
-        const { data: summaryRows, error: summaryError } = await supabase.rpc(
+        const { data: summaryRows, error: summaryError } = await client.rpc(
           "superbowl_participant_summary",
           { target_event: activeEvent.id }
         );
@@ -145,7 +147,7 @@ export default function SuperbowlLeaderboardPage() {
         return;
       }
 
-      const { data: questionRows, error: questionError } = await supabase
+      const { data: questionRows, error: questionError } = await client
         .from("superbowl_questions")
         .select("*")
         .eq("event_id", activeEvent.id)
@@ -164,7 +166,7 @@ export default function SuperbowlLeaderboardPage() {
 
       setQuestions(questionRows ?? []);
 
-      const { data: leaderboardRows, error: leaderboardError } = await supabase.rpc(
+      const { data: leaderboardRows, error: leaderboardError } = await client.rpc(
         "get_superbowl_leaderboard",
         { target_event: activeEvent.id }
       );
