@@ -2,28 +2,41 @@
 
 import { useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import { LOGIN_REDIRECT_KEY, LEGACY_LAPQUEST_LOGIN_KEY } from "@/lib/auth";
 
-const LOGIN_INTENT_KEY = "lapquest_login_intent";
-const TARGET_PATH = "/lapquest";
+const DEFAULT_TARGET_PATH = "/lapquest";
 
 export function LapquestLoginRedirect() {
   useEffect(() => {
     if (!supabase || typeof window === "undefined") return;
 
-    const shouldRedirect = () => window.localStorage.getItem(LOGIN_INTENT_KEY) === "1";
+    const getTargetPath = () => {
+      const explicitTarget = window.localStorage.getItem(LOGIN_REDIRECT_KEY);
+      if (explicitTarget) return explicitTarget;
+      const legacyIntent = window.localStorage.getItem(LEGACY_LAPQUEST_LOGIN_KEY);
+      return legacyIntent === "1" ? DEFAULT_TARGET_PATH : null;
+    };
+
+    const clearTarget = () => {
+      window.localStorage.removeItem(LOGIN_REDIRECT_KEY);
+      window.localStorage.removeItem(LEGACY_LAPQUEST_LOGIN_KEY);
+    };
+
     const redirect = () => {
-      window.localStorage.removeItem(LOGIN_INTENT_KEY);
-      if (window.location.pathname !== TARGET_PATH) {
-        window.location.replace(TARGET_PATH);
+      const target = getTargetPath();
+      if (!target) return;
+      clearTarget();
+      if (window.location.pathname !== target) {
+        window.location.replace(target);
       }
     };
 
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session && shouldRedirect()) redirect();
+      if (data.session) redirect();
     });
 
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session && shouldRedirect()) {
+      if (event === "SIGNED_IN" && session) {
         redirect();
       }
     });

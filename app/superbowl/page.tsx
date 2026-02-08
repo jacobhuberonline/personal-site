@@ -1,0 +1,253 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import type { Session } from "@supabase/supabase-js";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { SuperbowlHeader } from "@/components/superbowl/header";
+import { SuperbowlLoginCta } from "@/components/superbowl/login-cta";
+import { useToast } from "@/hooks/use-toast";
+import { isSupabaseConfigured, supabase } from "@/lib/supabaseClient";
+import type { SuperbowlEntry, SuperbowlEvent } from "@/lib/superbowl";
+import { formatEventTime } from "@/lib/superbowl";
+
+export default function SuperbowlHomePage() {
+  const { toast } = useToast();
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [event, setEvent] = useState<SuperbowlEvent | null>(null);
+  const [entry, setEntry] = useState<SuperbowlEntry | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const hasStarted = useMemo(() => {
+    if (!event) return false;
+    return Date.now() >= new Date(event.starts_at).getTime();
+  }, [event]);
+
+  const statusLabel = useMemo(() => {
+    if (!entry) return hasStarted ? "Locked by kickoff" : "Not started";
+    if (entry.status === "submitted") return "Submitted";
+    if (hasStarted) return "Locked by kickoff";
+    return "Draft saved";
+  }, [entry, hasStarted]);
+
+  useEffect(() => {
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
+
+    let isActive = true;
+
+    const loadSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!isActive) return;
+      setSession(data.session ?? null);
+    };
+
+    void loadSession();
+
+    const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      if (!isActive) return;
+      setSession(nextSession ?? null);
+    });
+
+    return () => {
+      isActive = false;
+      data?.subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!supabase || !session) {
+      setEvent(null);
+      setEntry(null);
+      setLoading(false);
+      return;
+    }
+
+    let isActive = true;
+
+    const loadEventAndEntry = async () => {
+      setLoading(true);
+      const { data: events, error: eventError } = await supabase
+        .from("superbowl_events")
+        .select("id,name,starts_at,is_active")
+        .eq("is_active", true)
+        .order("starts_at", { ascending: false })
+        .limit(1);
+
+      if (!isActive) return;
+      if (eventError) {
+        toast({
+          variant: "destructive",
+          title: "Couldn’t load Super Bowl event",
+          description: eventError.message,
+        });
+        setEvent(null);
+        setEntry(null);
+        setLoading(false);
+        return;
+      }
+
+      const activeEvent = events?.[0] ?? null;
+      setEvent(activeEvent);
+
+      if (!activeEvent) {
+        setEntry(null);
+        setLoading(false);
+        return;
+      }
+
+      const { data: entryData, error: entryError } = await supabase
+        .from("superbowl_entries")
+        .select("*")
+        .eq("event_id", activeEvent.id)
+        .maybeSingle();
+
+      if (!isActive) return;
+      if (entryError) {
+        toast({
+          variant: "destructive",
+          title: "Couldn’t load your picks",
+          description: entryError.message,
+        });
+        setEntry(null);
+      } else {
+        setEntry(entryData ?? null);
+      }
+
+      setLoading(false);
+    };
+
+    void loadEventAndEntry();
+
+    return () => {
+      isActive = false;
+    };
+  }, [session, toast]);
+
+  const handleSubmit = async () => {
+    if (!session || !event) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/superbowl/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ eventId: event.id }),
+      });
+      const payload = await res.json();
+      if (!res.ok) {
+        throw new Error(payload?.error || "Unable to submit picks.");
+      }
+      toast({
+        title: "Picks submitted",
+        description: "Your picks are locked in.",
+      });
+      setEntry(payload.entry ?? entry);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Submission failed",
+        description: error?.message ?? "Try again in a moment.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (!isSupabaseConfigured) {
+    return (
+      <div className="mx-auto w-full max-w-4xl space-y-4">
+        <h1 className="text-3xl font-semibold">Super Bowl Props</h1>
+        <p className="text-neutral-600 dark:text-neutral-300">
+          Supabase isn’t configured yet. Add NEXT_PUBLIC_SUPABASE_URL and
+          NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local, then restart the dev
+          server.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto w-full max-w-5xl space-y-8">
+      <SuperbowlHeader
+        title="Super Bowl LX Picks"
+        description="Make your picks, lock them in, and see the leaderboard after kickoff."
+      />
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Event Status</CardTitle>
+          <CardDescription>
+            {event ? `${event.name} · ${formatEventTime(event.starts_at)}` : "No active event"}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {loading ? (
+            <div className="text-sm text-neutral-500">Loading your status…</div>
+          ) : !session ? (
+            <div className="space-y-3">
+              <p className="text-sm text-neutral-600 dark:text-neutral-300">
+                Log in with your email to make picks and join the leaderboard.
+              </p>
+              <SuperbowlLoginCta redirectPath="/superbowl" label="Log in to make picks" />
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <div className="text-sm text-neutral-600 dark:text-neutral-300">
+                Status: <span className="font-semibold text-neutral-900 dark:text-neutral-100">{statusLabel}</span>
+              </div>
+              {hasStarted ? (
+                <div className="text-sm text-amber-600 dark:text-amber-400">
+                  Kickoff has passed. Picks are locked for everyone.
+                </div>
+              ) : (
+                <div className="text-sm text-neutral-500">
+                  Picks lock at kickoff: {event ? formatEventTime(event.starts_at) : "—"}.
+                </div>
+              )}
+            </div>
+          )}
+        </CardContent>
+        <CardFooter className="flex flex-wrap gap-3">
+          <Button asChild disabled={!session || hasStarted || !event}>
+            <Link href="/superbowl/picks">{entry ? "Edit picks" : "Start picks"}</Link>
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={handleSubmit}
+            disabled={!session || !entry || submitting || hasStarted || entry?.status === "submitted"}
+          >
+            {submitting ? "Submitting…" : "Submit picks"}
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/superbowl/leaderboard">View leaderboard</Link>
+          </Button>
+        </CardFooter>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>How it works</CardTitle>
+          <CardDescription>Drafts autosave. Submitting locks your picks.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm text-neutral-600 dark:text-neutral-300">
+          <p>Draft picks can be edited until kickoff. Submitting locks immediately.</p>
+          <p>After kickoff, the leaderboard reveals answers and scores.</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

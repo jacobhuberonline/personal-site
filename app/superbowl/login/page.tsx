@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SuperbowlHeader } from "@/components/superbowl/header";
 import { isSupabaseConfigured, supabase } from "@/lib/supabaseClient";
-import { getLoginRedirect, LEGACY_LAPQUEST_LOGIN_KEY, setLoginRedirect } from "@/lib/auth";
+import { getLoginRedirect, setLoginRedirect } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 
-export default function LoginPage() {
+export default function SuperbowlLoginPage() {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState<"request" | "verify">("request");
@@ -35,9 +36,8 @@ export default function LoginPage() {
     }
     if (typeof window !== "undefined") {
       if (!getLoginRedirect()) {
-        setLoginRedirect("/lapquest");
+        setLoginRedirect("/superbowl");
       }
-      window.localStorage.setItem(LEGACY_LAPQUEST_LOGIN_KEY, "1");
     }
     setSending(true);
     const { error } = await supabase.auth.signInWithOtp({ email });
@@ -84,33 +84,19 @@ export default function LoginPage() {
     }
     toast({
       title: "Signed in",
-      description: "Taking you back to LapQuest…",
+      description: "Taking you back to your picks…",
     });
   }
 
   return (
     <main className="min-h-screen bg-white text-slate-900 dark:bg-black dark:text-white">
-      <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 py-6">
-        <div className="mx-auto mt-10 grid min-h-[60vh] w-full max-w-5xl items-stretch gap-6 lg:grid-cols-[minmax(0,1fr)_480px]">
-          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white/80 dark:border-zinc-800 dark:bg-zinc-950/70">
-            <img
-              src="/lapquest/login.png"
-              alt="LapQuest preview"
-              className="h-full w-full object-cover"
-            />
-          </div>
-          <div className="flex h-full flex-col justify-center gap-6 rounded-2xl border border-slate-200 bg-white/80 p-8 dark:border-zinc-800 dark:bg-zinc-950/70">
-            <div>
-              <div className="text-xs font-medium uppercase tracking-[0.3em] text-slate-500 dark:text-zinc-500">
-                Login
-              </div>
-              <h1 className="mt-3 text-3xl font-semibold text-slate-900 dark:text-white sm:text-4xl">
-                Sign in to LapQuest
-              </h1>
-              <p className="mt-3 text-slate-600 dark:text-zinc-400">
-                We’ll email you a one-time code. No password needed.
-              </p>
-            </div>
+      <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-8 px-4 py-10">
+        <SuperbowlHeader
+          title="Sign in to make picks"
+          description="We’ll email you a one-time code. No password needed."
+        />
+        <div className="mx-auto w-full max-w-xl rounded-2xl border border-slate-200 bg-white/80 p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/70">
+          <div className="space-y-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-700 dark:text-zinc-200">Email</label>
               <Input
@@ -121,6 +107,7 @@ export default function LoginPage() {
                 disabled={step === "verify"}
               />
             </div>
+
             {step === "verify" ? (
               <>
                 <div className="space-y-2">
@@ -135,7 +122,7 @@ export default function LoginPage() {
                 </div>
                 <Button
                   onClick={verifyOtp}
-                  className="mt-4 w-full bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+                  className="mt-2 w-full bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
                   disabled={verifying}
                 >
                   {verifying ? "Verifying…" : "Verify code"}
@@ -162,7 +149,7 @@ export default function LoginPage() {
             ) : (
               <Button
                 onClick={sendOtp}
-                className="mt-4 w-full bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+                className="mt-2 w-full bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
                 disabled={sending}
               >
                 {sending ? "Sending…" : "Send code"}
