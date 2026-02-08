@@ -39,6 +39,20 @@ export default function SuperbowlHomePage() {
     return "Draft saved";
   }, [entry, hasStarted]);
 
+  const nextStep = useMemo(() => {
+    if (!session || !event) return null;
+    if (hasStarted) {
+      return "Kickoff has passed. Picks are locked; view the leaderboard.";
+    }
+    if (!entry) {
+      return "Start your picks to save a draft.";
+    }
+    if (entry.status === "submitted") {
+      return "You’re all set. View the leaderboard after kickoff.";
+    }
+    return "Finish your picks and submit before kickoff.";
+  }, [entry, event, hasStarted, session]);
+
   useEffect(() => {
     if (!supabase) {
       setLoading(false);
@@ -186,31 +200,43 @@ export default function SuperbowlHomePage() {
     <div className="mx-auto w-full max-w-5xl space-y-8">
       <SuperbowlHeader
         title="Super Bowl LX Picks"
-        description="Make your picks, lock them in, and see the leaderboard after kickoff."
+        description="Pick Super Bowl props, submit before kickoff, and see the leaderboard after the game starts."
       />
 
       <Card>
         <CardHeader>
-          <CardTitle>Event Status</CardTitle>
+          <CardTitle>Your status</CardTitle>
           <CardDescription>
-            {event ? `${event.name} · ${formatEventTime(event.starts_at)}` : "No active event"}
+            {event
+              ? `${event.name} · Kickoff ${formatEventTime(event.starts_at)}`
+              : session
+                ? "No active event"
+                : "Sign in to view event details"}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {loading ? (
             <div className="text-sm text-neutral-500">Loading your status…</div>
           ) : !session ? (
-            <div className="space-y-3">
-              <p className="text-sm text-neutral-600 dark:text-neutral-300">
-                Log in with your email to make picks and join the leaderboard.
+            <div className="rounded-lg border border-dashed border-neutral-300 bg-neutral-50 p-5 text-sm text-neutral-700 dark:border-neutral-800 dark:bg-neutral-900/60 dark:text-neutral-200">
+              <div className="font-semibold text-neutral-900 dark:text-neutral-100">
+                Sign in to start your picks
+              </div>
+              <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
+                We’ll email you a one-time code. No password needed.
               </p>
-              <SuperbowlLoginCta redirectPath="/superbowl" label="Log in to make picks" />
+              <div className="mt-5">
+                <SuperbowlLoginCta redirectPath="/superbowl" label="Sign in to start picks" />
+              </div>
             </div>
           ) : (
             <div className="space-y-2">
               <div className="text-sm text-neutral-600 dark:text-neutral-300">
                 Status: <span className="font-semibold text-neutral-900 dark:text-neutral-100">{statusLabel}</span>
               </div>
+              {nextStep ? (
+                <div className="text-sm text-neutral-600 dark:text-neutral-300">Next: {nextStep}</div>
+              ) : null}
               {hasStarted ? (
                 <div className="text-sm text-amber-600 dark:text-amber-400">
                   Kickoff has passed. Picks are locked for everyone.
@@ -224,30 +250,42 @@ export default function SuperbowlHomePage() {
           )}
         </CardContent>
         <CardFooter className="flex flex-wrap gap-3">
-          <Button asChild disabled={!session || hasStarted || !event}>
-            <Link href="/superbowl/picks">{entry ? "Edit picks" : "Start picks"}</Link>
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={handleSubmit}
-            disabled={!session || !entry || submitting || hasStarted || entry?.status === "submitted"}
-          >
-            {submitting ? "Submitting…" : "Submit picks"}
-          </Button>
-          <Button asChild variant="outline">
-            <Link href="/superbowl/leaderboard">View leaderboard</Link>
-          </Button>
+          {session ? (
+            <>
+              <Button asChild disabled={hasStarted || !event}>
+                <Link href="/superbowl/picks">{entry ? "Edit picks" : "Start picks"}</Link>
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={handleSubmit}
+                disabled={!entry || submitting || hasStarted || entry?.status === "submitted"}
+              >
+                {submitting ? "Submitting…" : "Submit picks"}
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/superbowl/leaderboard">View leaderboard</Link>
+              </Button>
+            </>
+          ) : (
+            <Button asChild variant="outline">
+              <Link href="/superbowl/leaderboard">View leaderboard</Link>
+            </Button>
+          )}
         </CardFooter>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>How it works</CardTitle>
-          <CardDescription>Drafts autosave. Submitting locks your picks.</CardDescription>
+          <CardTitle>Quick steps</CardTitle>
+          <CardDescription>Classic picks flow, start to finish.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm text-neutral-600 dark:text-neutral-300">
-          <p>Draft picks can be edited until kickoff. Submitting locks immediately.</p>
-          <p>After kickoff, the leaderboard reveals answers and scores.</p>
+        <CardContent className="text-sm text-neutral-600 dark:text-neutral-300">
+          <ol className="list-decimal space-y-2 pl-5">
+            <li>Log in with your email.</li>
+            <li>Make your picks (autosaves drafts).</li>
+            <li>Submit before kickoff to lock.</li>
+            <li>After kickoff, the leaderboard reveals answers and scores.</li>
+          </ol>
         </CardContent>
       </Card>
     </div>

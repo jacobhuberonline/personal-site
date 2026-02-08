@@ -28,7 +28,11 @@ export function SuperbowlLoginCta({
   }, [redirectPath]);
 
   return (
-    <Button asChild>
+    <Button
+      asChild
+      className="bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+      size="lg"
+    >
       <Link
         href="/superbowl/login"
         onClick={() => {
