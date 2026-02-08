@@ -42,7 +42,9 @@ export default function SuperbowlHomePage() {
   const nextStep = useMemo(() => {
     if (!session || !event) return null;
     if (hasStarted) {
-      return "Kickoff has passed. Picks are locked; view the leaderboard.";
+      return entry?.status === "submitted"
+        ? "Kickoff has passed. View the leaderboard."
+        : "Kickoff has passed. Picks are locked; you can still submit.";
     }
     if (!entry) {
       return "Start your picks to save a draft.";
@@ -200,7 +202,7 @@ export default function SuperbowlHomePage() {
     <div className="mx-auto w-full max-w-5xl space-y-8">
       <SuperbowlHeader
         title="Super Bowl LX Picks"
-        description="Pick Super Bowl props, submit before kickoff, and see the leaderboard after the game starts."
+        description="Pick Super Bowl props, submit any time, and see the leaderboard after the game starts."
       />
 
       <Card>
@@ -239,7 +241,9 @@ export default function SuperbowlHomePage() {
               ) : null}
               {hasStarted ? (
                 <div className="text-sm text-amber-600 dark:text-amber-400">
-                  Kickoff has passed. Picks are locked for everyone.
+                  {entry?.status === "submitted"
+                    ? "Kickoff has passed. Picks are locked."
+                    : "Kickoff has passed. Picks are locked, but you can still submit."}
                 </div>
               ) : (
                 <div className="text-sm text-neutral-500">
@@ -258,7 +262,7 @@ export default function SuperbowlHomePage() {
               <Button
                 variant="secondary"
                 onClick={handleSubmit}
-                disabled={!entry || submitting || hasStarted || entry?.status === "submitted"}
+                disabled={!entry || submitting || entry?.status === "submitted"}
               >
                 {submitting ? "Submitting…" : "Submit picks"}
               </Button>
@@ -283,7 +287,7 @@ export default function SuperbowlHomePage() {
           <ol className="list-decimal space-y-2 pl-5">
             <li>Log in with your email.</li>
             <li>Make your picks (autosaves drafts).</li>
-            <li>Submit before kickoff to lock.</li>
+            <li>Submit to lock (picks lock automatically at kickoff).</li>
             <li>After kickoff, the leaderboard reveals answers and scores.</li>
           </ol>
         </CardContent>

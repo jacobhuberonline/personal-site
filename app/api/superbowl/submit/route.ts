@@ -46,10 +46,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: eventErr?.message ?? "Event not found." }, { status: 400 });
   }
 
-  if (Date.now() >= new Date(event.starts_at).getTime()) {
-    return NextResponse.json({ error: "Picks are locked after kickoff." }, { status: 423 });
-  }
-
   const { data: entry, error: entryErr } = await supabase
     .from("superbowl_entries")
     .select("*")

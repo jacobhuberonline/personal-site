@@ -432,11 +432,14 @@ export default function SuperbowlPicksPage() {
             <CardContent className="space-y-2 text-sm">
               {isLocked ? (
                 <div className="text-amber-600 dark:text-amber-400">
-                  Picks are locked. {entry?.status === "submitted" ? "You submitted your picks." : "Kickoff has passed."}
+                  Picks are locked.{" "}
+                  {entry?.status === "submitted"
+                    ? "You submitted your picks."
+                    : "Kickoff has passed — you can still submit."}
                 </div>
               ) : (
                 <div className="text-neutral-500">
-                  Draft autosaves. Submitting locks immediately. Kickoff: {formatEventTime(event.starts_at)}.
+                  Draft autosaves. Submit any time. Kickoff: {formatEventTime(event.starts_at)}.
                 </div>
               )}
               {saveStatus === "saving" && <div className="text-neutral-500">Saving draft…</div>}
@@ -446,7 +449,7 @@ export default function SuperbowlPicksPage() {
             <CardFooter className="flex flex-wrap gap-3">
               <Button
                 onClick={handleSubmit}
-                disabled={isLocked || submitting || saving || !event || (!entry && !dirty)}
+                disabled={submitting || saving || !event || (!entry && !dirty) || entry?.status === "submitted"}
               >
                 {submitting ? "Submitting…" : "Submit picks"}
               </Button>
