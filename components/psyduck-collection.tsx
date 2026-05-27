@@ -255,9 +255,15 @@ export function PsyduckCollection() {
             purchases, binder planning, and TCGplayer searches.
           </p>
           <p className="max-w-2xl text-sm text-neutral-500 dark:text-neutral-400">
-            Market values are manual snapshots, not live prices. Target prices
-            are shown as personal targets or flex values and are excluded from
-            estimated collection value.
+            Market values are snapshots, not live prices. Cards with a verified
+            date use TCGplayer-backed data surfaced through Pokemon TCG price
+            sources; cards without a date are still manual. Target prices are
+            shown as high/flex values and are excluded from estimated collection
+            value.
+          </p>
+          <p className="max-w-2xl text-xs text-neutral-500 dark:text-neutral-400">
+            Card images are served from local site assets sourced from public
+            Pokemon TCG image references. Image rights remain with their owners.
           </p>
         </div>
 
@@ -635,6 +641,8 @@ function CardTile({ card }: { card: PsyduckCard }) {
           </p>
         ) : null}
 
+        <PriceSourceNote card={card} />
+
         <ExternalCardLink card={card} />
       </div>
     </article>
@@ -649,7 +657,7 @@ function CardArtwork({ card }: { card: PsyduckCard }) {
           src={card.imageUrl}
           alt={`${card.name} ${card.set} ${card.number ?? ""}`.trim()}
           fill
-          className="object-cover"
+          className="object-contain p-2"
           sizes="(min-width: 1280px) 33vw, (min-width: 640px) 50vw, 100vw"
         />
       </div>
@@ -732,6 +740,42 @@ function PriceStat({ label, value }: { label: string; value: string }) {
   );
 }
 
+function PriceSourceNote({ card }: { card: PsyduckCard }) {
+  if (card.priceUpdatedAt && card.priceSourceUrl) {
+    return (
+      <a
+        href={card.priceSourceUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-1 text-xs font-medium text-neutral-500 underline decoration-neutral-300 underline-offset-4 transition hover:text-neutral-800 hover:decoration-neutral-500 dark:text-neutral-400 dark:decoration-neutral-700 dark:hover:text-neutral-100"
+      >
+        Price verified {card.priceUpdatedAt}
+        <ExternalLink className="h-3 w-3" />
+      </a>
+    );
+  }
+
+  if (card.priceSourceUrl) {
+    return (
+      <a
+        href={card.priceSourceUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-1 text-xs font-medium text-neutral-500 underline decoration-neutral-300 underline-offset-4 transition hover:text-neutral-800 hover:decoration-neutral-500 dark:text-neutral-400 dark:decoration-neutral-700 dark:hover:text-neutral-100"
+      >
+        Source linked; price remains manual
+        <ExternalLink className="h-3 w-3" />
+      </a>
+    );
+  }
+
+  return (
+    <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+      Manual placeholder image and price
+    </p>
+  );
+}
+
 function ExternalCardLink({
   card,
   compact = false,
@@ -760,7 +804,7 @@ function BinderSlot({ card }: { card: PsyduckCard }) {
   return (
     <div
       className={cn(
-        "min-h-36 rounded-lg border p-3",
+        "rounded-lg border p-3",
         card.status === "Owned"
           ? "border-emerald-200 bg-emerald-50/70 dark:border-emerald-900 dark:bg-emerald-950/20"
           : "border-dashed border-neutral-300 bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-950/60"
@@ -776,7 +820,22 @@ function BinderSlot({ card }: { card: PsyduckCard }) {
           <ShoppingCart className="h-4 w-4 text-neutral-400" />
         )}
       </div>
-      <div className="mt-8">
+      <div className="relative mt-3 aspect-[3/4] overflow-hidden rounded-md bg-white/80 dark:bg-neutral-900">
+        {card.imageUrl ? (
+          <Image
+            src={card.imageUrl}
+            alt={`${card.name} ${card.set} ${card.number ?? ""}`.trim()}
+            fill
+            className="object-contain p-1"
+            sizes="(min-width: 640px) 25vw, 50vw"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center bg-gradient-to-br from-sky-100 via-amber-100 to-white p-3 text-center text-xs font-semibold text-neutral-600 dark:from-sky-950 dark:via-amber-950/50 dark:to-neutral-900 dark:text-neutral-300">
+            No image
+          </div>
+        )}
+      </div>
+      <div className="mt-3">
         <p className="text-sm font-semibold leading-tight text-neutral-950 dark:text-neutral-50">
           {card.name}
         </p>
