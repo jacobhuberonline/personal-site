@@ -20,6 +20,7 @@ const footerItems = [
 export function SiteShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isLapquest = pathname?.startsWith("/lapquest");
+  const isMissingCat = pathname === "/missingcat";
   const year = new Date().getFullYear();
   const prevPathRef = useRef<string | null>(null);
 
@@ -33,7 +34,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
 
   return (
     <>
-      {!isLapquest && (
+      {!isLapquest && !isMissingCat && (
         <header className="border-b border-neutral-200 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:border-neutral-800 dark:bg-neutral-900/80 dark:supports-[backdrop-filter]:bg-neutral-900/70">
           <div className="flex w-full items-center justify-between px-4 py-4 sm:px-6">
             <Link href="/" className="text-base font-semibold">
@@ -54,24 +55,26 @@ export function SiteShell({ children }: { children: ReactNode }) {
         </header>
       )}
       <main className={isLapquest ? "w-full" : "w-full px-4 py-10 sm:px-6"}>{children}</main>
-      <footer className="border-t border-neutral-200 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:border-neutral-800 dark:bg-neutral-900/80 dark:supports-[backdrop-filter]:bg-neutral-900/70">
-        <div className="flex w-full flex-col gap-4 px-4 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <div className="text-xs font-medium uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
-            © {year} Jacob Huber
+      {!isMissingCat && (
+        <footer className="border-t border-neutral-200 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:border-neutral-800 dark:bg-neutral-900/80 dark:supports-[backdrop-filter]:bg-neutral-900/70">
+          <div className="flex w-full flex-col gap-4 px-4 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+            <div className="text-xs font-medium uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
+              © {year} Jacob Huber
+            </div>
+            <nav className="flex flex-wrap items-center gap-4 text-sm font-medium text-neutral-700 dark:text-neutral-200">
+              {footerItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="transition hover:text-neutral-900 dark:hover:text-neutral-50"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
           </div>
-          <nav className="flex flex-wrap items-center gap-4 text-sm font-medium text-neutral-700 dark:text-neutral-200">
-            {footerItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="transition hover:text-neutral-900 dark:hover:text-neutral-50"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-      </footer>
+        </footer>
+      )}
     </>
   );
 }
