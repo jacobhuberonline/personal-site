@@ -147,6 +147,7 @@ function matchesSearch(card: PsyduckCard, query: string) {
     card.set,
     card.number,
     card.variant,
+    card.condition,
     card.category,
     card.phase,
   ]
@@ -302,7 +303,7 @@ export function PsyduckCollection() {
           <SummaryCard
             label="Next recommended buys"
             value={recommendedBuys.length.toString()}
-            detail="Prioritized vintage and 151 targets"
+            detail="Prioritized remaining vintage and mid-era targets"
           />
         </div>
       </section>
@@ -623,6 +624,7 @@ function CardTile({ card }: { card: PsyduckCard }) {
           <Badge>{card.category}</Badge>
           <Badge>{phaseLabel(card.phase)}</Badge>
           {card.variant ? <Badge>{card.variant}</Badge> : null}
+          {card.condition ? <Badge>{card.condition}</Badge> : null}
           {isChase ? <ChaseBadge /> : null}
         </div>
 
@@ -630,10 +632,18 @@ function CardTile({ card }: { card: PsyduckCard }) {
           <PriceStat label="Low" value={formatCurrency(card.lowPrice)} />
           <PriceStat label="Market" value={formatCurrency(card.marketPrice)} />
           <PriceStat
-            label={card.targetPrice && card.targetPrice >= 999 ? "Flex" : "Target"}
-            value={formatCurrency(card.targetPrice)}
+            label={
+              typeof card.purchasePrice === "number"
+                ? "Paid"
+                : card.targetPrice && card.targetPrice >= 999
+                  ? "Flex"
+                  : "Target"
+            }
+            value={formatCurrency(card.purchasePrice ?? card.targetPrice)}
           />
         </dl>
+
+        <PurchaseNote card={card} />
 
         {card.notes ? (
           <p className="line-clamp-2 text-sm text-neutral-600 dark:text-neutral-300">
@@ -737,6 +747,18 @@ function PriceStat({ label, value }: { label: string; value: string }) {
         {value}
       </dd>
     </div>
+  );
+}
+
+function PurchaseNote({ card }: { card: PsyduckCard }) {
+  if (!card.purchasedAt) {
+    return null;
+  }
+
+  return (
+    <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+      Purchased {card.purchasedAt}
+    </p>
   );
 }
 
@@ -877,7 +899,10 @@ function TrackingTable({ cards }: { cards: PsyduckCard[] }) {
               <span>{card.category}</span>
               <span>{phaseLabel(card.phase)}</span>
               <span>Market {formatCurrency(card.marketPrice)}</span>
-              <span>Target {formatCurrency(card.targetPrice)}</span>
+              <span>
+                {typeof card.purchasePrice === "number" ? "Paid" : "Target"}{" "}
+                {formatCurrency(card.purchasePrice ?? card.targetPrice)}
+              </span>
             </div>
             <div className="mt-3">
               <ExternalCardLink card={card} />
@@ -896,7 +921,7 @@ function TrackingTable({ cards }: { cards: PsyduckCard[] }) {
               <TableHead>Phase</TableHead>
               <TableHead className="text-right">Low</TableHead>
               <TableHead className="text-right">Market</TableHead>
-              <TableHead className="text-right">Target</TableHead>
+              <TableHead className="text-right">Paid/Target</TableHead>
               <TableHead className="text-right">Link</TableHead>
             </TableRow>
           </TableHeader>
@@ -917,6 +942,7 @@ function TrackingTable({ cards }: { cards: PsyduckCard[] }) {
                     {card.set}
                     {card.number ? ` - ${card.number}` : ""}
                     {card.variant ? ` / ${card.variant}` : ""}
+                    {card.condition ? ` / ${card.condition}` : ""}
                   </div>
                 </TableCell>
                 <TableCell>{card.category}</TableCell>
@@ -928,7 +954,7 @@ function TrackingTable({ cards }: { cards: PsyduckCard[] }) {
                   {formatCurrency(card.marketPrice)}
                 </TableCell>
                 <TableCell className="text-right">
-                  {formatCurrency(card.targetPrice)}
+                  {formatCurrency(card.purchasePrice ?? card.targetPrice)}
                 </TableCell>
                 <TableCell className="text-right">
                   <ExternalCardLink card={card} compact />
