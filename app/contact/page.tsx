@@ -17,10 +17,10 @@ export default function ContactPage() {
               Email
             </span>
             <a
-              href="mailto:jacob-huber@outlook.com"
+              href="mailto:jhuber.mail@icloud.com"
               className="text-base font-medium underline decoration-neutral-300 underline-offset-4 transition hover:decoration-neutral-500 dark:decoration-neutral-600 dark:hover:decoration-neutral-300"
             >
-              jacob-huber@outlook.com
+              jhuber.mail@icloud.com
             </a>
           </li>
           <li className="flex flex-col gap-1">
@@ -32,28 +32,6 @@ export default function ContactPage() {
               className="text-base font-medium underline decoration-neutral-300 underline-offset-4 transition hover:decoration-neutral-500 dark:decoration-neutral-600 dark:hover:decoration-neutral-300"
             >
               github.com/jacobhuberonline
-            </Link>
-          </li>
-          <li className="flex flex-col gap-1">
-            <span className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-              X
-            </span>
-            <Link
-              href="https://x.com/jacobhuberonlin"
-              className="text-base font-medium underline decoration-neutral-300 underline-offset-4 transition hover:decoration-neutral-500 dark:decoration-neutral-600 dark:hover:decoration-neutral-300"
-            >
-              x.com/jacobhuberonlin
-            </Link>
-          </li>
-          <li className="flex flex-col gap-1">
-            <span className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-              LinkedIn
-            </span>
-            <Link
-              href="https://www.linkedin.com/in/jacobhuberonline/"
-              className="text-base font-medium underline decoration-neutral-300 underline-offset-4 transition hover:decoration-neutral-500 dark:decoration-neutral-600 dark:hover:decoration-neutral-300"
-            >
-              linkedin.com/in/jacobhuberonline
             </Link>
           </li>
         </ul>
