@@ -14,7 +14,6 @@ const navItems = [
 const footerItems = [
   { href: "/", label: "Home" },
   ...navItems,
-  { href: "/lapquest", label: "LapQuest" },
 ];
 
 export function SiteShell({ children }: { children: ReactNode }) {
@@ -33,7 +32,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
   }, [isLapquest, pathname]);
 
   return (
-    <>
+    <div className="flex min-h-screen flex-col">
       {!isLapquest && !isMissingCat && (
         <header className="border-b border-neutral-200 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:border-neutral-800 dark:bg-neutral-900/80 dark:supports-[backdrop-filter]:bg-neutral-900/70">
           <div className="flex w-full items-center justify-between px-4 py-4 sm:px-6">
@@ -54,7 +53,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
           </div>
         </header>
       )}
-      <main className={isLapquest ? "w-full" : "w-full px-4 py-10 sm:px-6"}>{children}</main>
+      <main className={isLapquest ? "flex-1 w-full" : "flex-1 w-full px-4 py-10 sm:px-6"}>{children}</main>
       {!isMissingCat && (
         <footer className="border-t border-neutral-200 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:border-neutral-800 dark:bg-neutral-900/80 dark:supports-[backdrop-filter]:bg-neutral-900/70">
           <div className="flex w-full flex-col gap-4 px-4 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-6">
@@ -75,6 +74,6 @@ export function SiteShell({ children }: { children: ReactNode }) {
           </div>
         </footer>
       )}
-    </>
+    </div>
   );
 }
