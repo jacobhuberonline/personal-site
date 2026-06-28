@@ -4,29 +4,6 @@ import { projects } from "@/lib/projects";
 
 const featuredProjects = projects.slice(0, 4);
 
-const services = [
-  {
-    title: "Business websites",
-    description:
-      "Clear, mobile-friendly sites for small businesses, service providers, and local organizations that need to look current and be easy to contact.",
-  },
-  {
-    title: "Service pages and landing pages",
-    description:
-      "Focused pages for a specific offer, location, campaign, or audience, with copy and structure built around the action you want visitors to take.",
-  },
-  {
-    title: "Portfolio and content structure",
-    description:
-      "Project galleries, journals, FAQs, resource pages, and other content systems that make it easier to explain your work and keep the site useful.",
-  },
-  {
-    title: "Small web tools",
-    description:
-      "Practical forms, dashboards, automations, and internal tools when a standard brochure site is not enough for the workflow behind the business.",
-  },
-];
-
 const formatDate = (date: string) =>
   date
     ? new Date(date).toLocaleDateString("en-US", {
@@ -79,31 +56,24 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section id="services" className="space-y-4 scroll-mt-24">
-        <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-50">
-            Website Services
-          </h2>
-          <p className="max-w-2xl text-sm text-neutral-600 dark:text-neutral-300">
-            I help with the parts most business owners need first: a site that
-            explains what you do, shows proof, works well on phones, and gives
-            people a clear next step.
-          </p>
-        </div>
-        <div className="grid gap-5 sm:grid-cols-2">
-          {services.map((service) => (
-            <div
-              key={service.title}
-              className="rounded-xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
-            >
-              <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">
-                {service.title}
-              </h3>
-              <p className="mt-2 text-sm text-neutral-700 dark:text-neutral-200">
-                {service.description}
-              </p>
-            </div>
-          ))}
+      <section className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="space-y-2">
+            <h2 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-50">
+              Website Services
+            </h2>
+            <p className="max-w-2xl text-sm text-neutral-600 dark:text-neutral-300">
+              Professional websites, focused landing pages, site refreshes, and
+              small web tools for businesses that need a clearer online
+              presence.
+            </p>
+          </div>
+          <Link
+            href="/services"
+            className="inline-flex shrink-0 items-center justify-center rounded-xl border border-neutral-300 px-5 py-3 text-sm font-semibold text-neutral-900 transition hover:border-neutral-500 dark:border-neutral-700 dark:text-neutral-50 dark:hover:border-neutral-400"
+          >
+            View services
+          </Link>
         </div>
       </section>
 
