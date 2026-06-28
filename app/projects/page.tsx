@@ -9,8 +9,8 @@ export default function ProjectsPage() {
           Projects
         </h1>
         <p className="text-neutral-700 dark:text-neutral-200">
-          Active websites, healthcare tools, and personal projects from the
-          systems and web products I build or maintain.
+          Websites, web products, healthcare tools, and personal projects from
+          the systems I build or maintain.
         </p>
       </div>
       <div className="grid gap-5 sm:grid-cols-2">

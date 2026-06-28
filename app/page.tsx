@@ -2,7 +2,30 @@ import Link from "next/link";
 import { getPosts } from "../lib/mdx/get-posts";
 import { projects } from "@/lib/projects";
 
-const featuredProjects = projects.slice(0, 2);
+const featuredProjects = projects.slice(0, 4);
+
+const services = [
+  {
+    title: "Business websites",
+    description:
+      "Clear, mobile-friendly sites for small businesses, service providers, and local organizations that need to look current and be easy to contact.",
+  },
+  {
+    title: "Service pages and landing pages",
+    description:
+      "Focused pages for a specific offer, location, campaign, or audience, with copy and structure built around the action you want visitors to take.",
+  },
+  {
+    title: "Portfolio and content structure",
+    description:
+      "Project galleries, journals, FAQs, resource pages, and other content systems that make it easier to explain your work and keep the site useful.",
+  },
+  {
+    title: "Small web tools",
+    description:
+      "Practical forms, dashboards, automations, and internal tools when a standard brochure site is not enough for the workflow behind the business.",
+  },
+];
 
 const formatDate = (date: string) =>
   date
@@ -25,27 +48,69 @@ export default async function HomePage() {
             Jacob
           </h1>
           <p className="text-sm font-semibold tracking-wide text-neutral-500">
-            Software engineer · Healthcare data integrations & API-driven automation
+            Websites, web tools, and automation for businesses
           </p>
         </div>
         <div className="space-y-3">
           <p className="max-w-2xl text-lg text-neutral-700 dark:text-neutral-200">
-            I&apos;m a software engineer focused on healthcare data integrations,
-            API-driven automation, and modern web tooling. I like turning messy
-            data and workflows into predictable, reliable systems.
+            I build practical websites for small businesses, service providers,
+            and community organizations that need a cleaner way to show up
+            online and turn visitors into real conversations.
           </p>
           <p className="max-w-2xl text-sm text-neutral-600 dark:text-neutral-300">
-            Most of my side projects revolve around creating and running websites,
-            building small tools, and experimenting with ideas that simplify daily
-            life or explore new technology.
+            My background is software engineering, healthcare data integrations,
+            and automation, so I can help with both the public website and the
+            behind-the-scenes workflows that make a business easier to run.
           </p>
+        </div>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Link
+            href="/contact"
+            className="inline-flex items-center justify-center rounded-xl bg-neutral-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-neutral-700 dark:bg-neutral-50 dark:text-neutral-950 dark:hover:bg-neutral-200"
+          >
+            Start a website project
+          </Link>
+          <Link
+            href="/projects"
+            className="inline-flex items-center justify-center rounded-xl border border-neutral-300 bg-white px-5 py-3 text-sm font-semibold text-neutral-900 transition hover:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-50 dark:hover:border-neutral-400"
+          >
+            See recent work
+          </Link>
+        </div>
+      </section>
+
+      <section id="services" className="space-y-4 scroll-mt-24">
+        <div className="space-y-2">
+          <h2 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-50">
+            Website Services
+          </h2>
+          <p className="max-w-2xl text-sm text-neutral-600 dark:text-neutral-300">
+            I help with the parts most business owners need first: a site that
+            explains what you do, shows proof, works well on phones, and gives
+            people a clear next step.
+          </p>
+        </div>
+        <div className="grid gap-5 sm:grid-cols-2">
+          {services.map((service) => (
+            <div
+              key={service.title}
+              className="rounded-xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
+            >
+              <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">
+                {service.title}
+              </h3>
+              <p className="mt-2 text-sm text-neutral-700 dark:text-neutral-200">
+                {service.description}
+              </p>
+            </div>
+          ))}
         </div>
       </section>
 
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-50">
-            Featured Projects
+            Recent Website Work
           </h2>
           <Link
             href="/projects"
@@ -54,6 +119,10 @@ export default async function HomePage() {
             View all
           </Link>
         </div>
+        <p className="max-w-2xl text-sm text-neutral-600 dark:text-neutral-300">
+          A few examples of websites and web products I&apos;ve built, from
+          service businesses to training programs and custom tools.
+        </p>
         <div className="grid gap-6 md:grid-cols-2">
           {featuredProjects.map((project) => (
             <div
@@ -98,7 +167,7 @@ export default async function HomePage() {
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-50">
-            Latest Writing
+            Writing & Notes
           </h2>
           <Link
             href="/blog"

@@ -9,13 +9,15 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://jhuber.vercel.app"),
   title: {
-    default: "Jacob Huber · Software Engineer",
+    default: "Jacob Huber · Websites & Software",
     template: "%s · Jacob Huber",
   },
   description:
-    "Software engineer focused on healthcare data integrations, API-driven automation, and modern web tooling. Personal projects, notes, and experiments in one place.",
+    "Websites, web tools, and automation for small businesses, service providers, and community organizations.",
   keywords: [
     "Jacob Huber",
+    "website builder",
+    "small business websites",
     "software engineer",
     "healthcare data",
     "API integrations",
@@ -25,9 +27,9 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Jacob Huber" }],
   openGraph: {
-    title: "Jacob Huber · Software Engineer",
+    title: "Jacob Huber · Websites & Software",
     description:
-      "Software engineer focused on healthcare data integrations, API-driven automation, and modern web tooling.",
+      "Websites, web tools, and automation for small businesses, service providers, and community organizations.",
     url: "https://jhuber.vercel.app",
     siteName: "Jacob Huber",
     type: "website",
@@ -42,9 +44,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Jacob Huber · Software Engineer",
+    title: "Jacob Huber · Websites & Software",
     description:
-      "Healthcare data integrations, API-driven automation, and modern web projects.",
+      "Websites, web tools, and automation for small businesses and service providers.",
     images: ["/images/default-social.png"],
   },
 };

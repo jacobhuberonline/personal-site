@@ -18,7 +18,7 @@ export default function AboutPage() {
               Jacob Huber
             </p>
             <p className="text-sm text-neutral-600 dark:text-neutral-300">
-              Engineer building healthcare integrations and modern web products.
+              Engineer building websites, web tools, and reliable automations.
             </p>
           </div>
         </div>
@@ -27,24 +27,24 @@ export default function AboutPage() {
       <h1>About</h1>
 
       <p>
-        I&apos;m a software engineer focused on healthcare data integrations, API-driven
-        automation, and high-reliability import/export pipelines. Most of my work centers
-        around building tools that help clinical and payer systems exchange data cleanly
-        and efficiently—custom ETL workflows, staging logic, credentialing data flows,
-        and internal automation used across multiple organizations.
+        I&apos;m a software engineer who builds websites, web tools, and automation for
+        businesses and organizations that need practical systems instead of fragile
+        one-off pages. I care about clear messaging, fast pages, maintainable code,
+        and making it obvious how a visitor should take the next step.
       </p>
 
       <p>
-        I work extensively with C#, .NET, SQL, PowerShell, and modern web tooling like
-        Next.js and TypeScript. I enjoy taking messy systems and making them predictable:
-        validating data, tightening workflows, improving interfaces, and finding ways to
-        automate the parts teams struggle with the most.
+        My background also includes healthcare data integrations, API-driven automation,
+        and high-reliability import/export pipelines. That experience shapes how I
+        approach client websites: the public site should be easy to use, and the
+        systems behind it should make the business easier to run.
       </p>
 
       <p>
-        Outside of my core engineering work, most of my side projects focus on creating
-        and running websites, building small tools, and experimenting with ideas that
-        help simplify daily life or explore new technologies.
+        I work extensively with C#, .NET, SQL, PowerShell, Next.js, and TypeScript.
+        I enjoy taking messy systems and making them predictable: validating data,
+        tightening workflows, improving interfaces, and automating the parts teams
+        struggle with the most.
       </p>
 
       <p>
